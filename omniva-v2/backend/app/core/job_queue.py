@@ -3,9 +3,9 @@
 
 from collections import deque
 from dataclasses import dataclass
-from typing import Any, Deque, Dict
+from typing import Any, Deque, Dict, Optional
 
-from .registry import get_subsystem
+from app.core.registry import get_subsystem
 
 import logging
 
@@ -14,10 +14,12 @@ logger = logging.getLogger("omniva_v2")
 
 @dataclass
 class Job:
+    """Lightweight representation of a queued job."""
+
     id: int
     type: str
     payload: Dict[str, Any]
-    result: Any | None = None
+    result: Optional[Any] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {"id": self.id, "type": self.type, "payload": self.payload, "result": self.result}
@@ -26,7 +28,7 @@ class Job:
 class JobQueue:
     """Simple FIFO queue."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._queue: Deque[Job] = deque()
         self._next_id = 1
 
@@ -35,12 +37,13 @@ class JobQueue:
         self._queue.append(Job(id=self._next_id, type=job_type, payload=payload))
         self._next_id += 1
 
-    def dequeue(self) -> Job | None:
+    def dequeue(self) -> Optional[Job]:
         if not self._queue:
             return None
         return self._queue.popleft()
 
     def process(self, job: Job) -> Any:
+        """Process a job and attach the placeholder result."""
         logger.info("Processing job %s (placeholder)", job.type)
         if job.type == "analyze_transcript":
             analysis = get_subsystem("analysis")
@@ -48,7 +51,7 @@ class JobQueue:
                 project_id=job.payload.get("project_id"),
                 transcript=job.payload.get("transcript"),
             )
-            job.result = [c.dict() for c in result]
+            job.result = [clip.dict() for clip in result]
         elif job.type == "render_clips":
             editing = get_subsystem("editing")
             candidates = job.payload.get("candidates", [])
@@ -70,9 +73,8 @@ class JobQueue:
         return len(self._queue)
 
 
-JOB_QUEUE = JobQueue()
+job_queue = JobQueue()
+
 
 def get_job_queue() -> JobQueue:
-    return JOB_QUEUE
-
-job_queue = JOB_QUEUE
+    return job_queue

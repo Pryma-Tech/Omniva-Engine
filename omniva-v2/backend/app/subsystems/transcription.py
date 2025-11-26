@@ -1,8 +1,18 @@
-"""Transcription subsystem (placeholder)."""
+"""Transcription subsystem for Omniva Engine v2 (placeholder)."""
+
+from app.core.registry import registry
+
 
 class TranscriptionSubsystem:
-    def initialize(self) -> None:
-        return None
+    """Placeholder transcription engine."""
+
+    name = "transcription"
+
+    def initialize(self) -> dict:
+        return {"status": "transcription subsystem initialized (placeholder)"}
 
     def status(self) -> dict:
-        return {"name": "transcription", "status": "standby (placeholder)"}
+        return {"name": self.name, "status": "ok (placeholder)"}
+
+
+registry.register_subsystem("transcription", TranscriptionSubsystem())

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from ...core.config import as_dict
+from app.core.config import as_dict
 
 router = APIRouter()
 

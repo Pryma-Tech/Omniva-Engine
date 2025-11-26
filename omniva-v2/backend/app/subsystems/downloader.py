@@ -1,10 +1,18 @@
-"""Downloader subsystem (placeholder)."""
-# TODO: Implement actual download logic.
+"""Downloader subsystem for Omniva Engine v2 (placeholder)."""
+
+from app.core.registry import registry
+
 
 class DownloaderSubsystem:
-    def initialize(self) -> None:
-        """Initialize downloader resources (placeholder)."""
-        return None
+    """Placeholder downloader engine."""
+
+    name = "downloader"
+
+    def initialize(self) -> dict:
+        return {"status": "downloader subsystem initialized (placeholder)"}
 
     def status(self) -> dict:
-        return {"name": "downloader", "status": "ready (placeholder)"}
+        return {"name": self.name, "status": "ok (placeholder)"}
+
+
+registry.register_subsystem("downloader", DownloaderSubsystem())

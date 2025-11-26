@@ -29,3 +29,5 @@ class AnalysisSubsystem:
     def status(self):
         return {"name": self.name, "status": "ok (placeholder)"}
 
+
+registry.register_subsystem("analysis", AnalysisSubsystem())

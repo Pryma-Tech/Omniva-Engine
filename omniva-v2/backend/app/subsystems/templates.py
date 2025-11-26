@@ -11,10 +11,10 @@ class TemplateSubsystem:
 
     name = "templates"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.templates: List[StyleTemplate] = []
 
-    def initialize(self) -> Dict[str, str]:
+    def initialize(self) -> dict:
         return {"status": "template subsystem initialized (placeholder)"}
 
     def add_template(self, template: StyleTemplate) -> Dict[str, Any]:

@@ -1,9 +1,8 @@
 """Subsystem registry (placeholder)."""
 # TODO: Add lifecycle management and plugin discovery.
 
-from typing import Any, Dict
-
 import logging
+from typing import Any, Dict
 
 logger = logging.getLogger("omniva_v2")
 
@@ -11,7 +10,7 @@ logger = logging.getLogger("omniva_v2")
 class SubsystemRegistry:
     """Simple in-memory registry for subsystem instances."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._registry: Dict[str, Any] = {}
         logger.info("SubsystemRegistry initialized (placeholder).")
 
@@ -26,25 +25,24 @@ class SubsystemRegistry:
         return {name: instance.__class__.__name__ for name, instance in self._registry.items()}
 
 
-REGISTRY = SubsystemRegistry()
+registry = SubsystemRegistry()
 
 
 def register_subsystem(name: str, instance: Any) -> None:
-    REGISTRY.register_subsystem(name, instance)
+    registry.register_subsystem(name, instance)
 
 
 def get_subsystem(name: str) -> Any:
-    return REGISTRY.get_subsystem(name)
+    return registry.get_subsystem(name)
 
 
 def list_subsystems() -> Dict[str, str]:
-    return REGISTRY.list_subsystems()
-
-registry = REGISTRY
+    return registry.list_subsystems()
 
 
-def initialize_all():
+def initialize_all() -> None:
     """Call initialize on all registered subsystems if available."""
-    for subsystem in REGISTRY._registry.values():
-        if hasattr(subsystem, "initialize"):
-            subsystem.initialize()
+    for subsystem in registry._registry.values():
+        initialize = getattr(subsystem, "initialize", None)
+        if callable(initialize):
+            initialize()

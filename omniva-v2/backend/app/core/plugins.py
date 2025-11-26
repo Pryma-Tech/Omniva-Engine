@@ -1,27 +1,40 @@
-"""Plugin loading (placeholder)."""
-# TODO: Discover plugins dynamically from configuration.
+"""Subsystem plugin loader (placeholder)."""
 
 import logging
 
-from .registry import register_subsystem
-from .event_bus import get_event_bus
-from .job_queue import get_job_queue
-from ..subsystems import downloader, scraper, transcription, analysis, editing, uploader, scheduler, templates, worker
+from app.core.registry import register_subsystem
+from app.core.event_bus import event_bus
+from app.core.job_queue import job_queue
+
+# Import subsystem modules for registration side effects.
+from app.subsystems import (  # noqa: F401
+    analysis,
+    downloader,
+    editing,
+    scheduler,
+    scraper,
+    templates,
+    transcription,
+    uploader,
+    worker,
+)
 
 logger = logging.getLogger("omniva_v2")
 
 
 def load_plugins() -> None:
-    """Initialize subsystem plugins and register them."""
+    """Initialize shared subsystems such as event bus and job queue."""
     logger.info("Loading subsystem plugins (placeholder)")
-    register_subsystem("event_bus", get_event_bus())
-    register_subsystem("job_queue", get_job_queue())
-    register_subsystem("downloader", downloader.DownloaderSubsystem())
-    register_subsystem("scraper", scraper.ScraperSubsystem())
-    register_subsystem("transcription", transcription.TranscriptionSubsystem())
-    register_subsystem("analysis", analysis.AnalysisSubsystem())
-    register_subsystem("editing", editing.EditingSubsystem())
-    register_subsystem("uploader", uploader.UploaderSubsystem())
-    register_subsystem("scheduler", scheduler.SchedulerSubsystem())
-    register_subsystem("templates", templates.TemplateSubsystem())
-    register_subsystem("worker", worker.WorkerSubsystem())
+    register_subsystem("event_bus", event_bus)
+    register_subsystem("job_queue", job_queue)
+from app.subsystems import (  # noqa: F401
+    analysis,
+    downloader,
+    editing,
+    scheduler,
+    scraper,
+    templates,
+    transcription,
+    uploader,
+    worker,
+)

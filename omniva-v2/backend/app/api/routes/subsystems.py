@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from ...core.registry import list_subsystems
+from app.core.registry import list_subsystems
 
 router = APIRouter()
 

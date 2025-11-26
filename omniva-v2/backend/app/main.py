@@ -3,41 +3,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .core.config import load_config
-from .core.plugins import load_plugins
-from .core.registry import list_subsystems, register_subsystem, initialize_all
-from .core.job_queue import get_job_queue
-from .core.event_bus import get_event_bus
-from .api.routes import (
-    projects,
-    pipeline,
-    subsystems,
-    events,
-    jobs,
-    status,
-    transcription,
-    analysis,
-    editing,
-    uploader,
-    scheduler,
-    templates,
-    worker,
-)
+from app.core.config import load_config
+from app.core.plugins import load_plugins
+from app.core.registry import initialize_all, list_subsystems
+from app.core.job_queue import get_job_queue
+from app.api.routes import analysis as analysis_router
+from app.api.routes import editing as editing_router
+from app.api.routes import events as events_router
+from app.api.routes import jobs as jobs_router
+from app.api.routes import pipeline as pipeline_router
+from app.api.routes import projects as projects_router
+from app.api.routes import scheduler as scheduler_router
+from app.api.routes import status as status_router
+from app.api.routes import subsystems as subsystems_router
+from app.api.routes import templates as templates_router
+from app.api.routes import transcription as transcription_router
+from app.api.routes import uploader as uploader_router
+from app.api.routes import worker as worker_router
 
 config = load_config()
 load_plugins()
-from .subsystems.analysis import AnalysisSubsystem
-from .subsystems.editing import EditingSubsystem
-from .subsystems.uploader import UploaderSubsystem
-from .subsystems.scheduler import SchedulerSubsystem
-from .subsystems.templates import TemplateSubsystem
-from .subsystems.worker import WorkerSubsystem
-register_subsystem("analysis", AnalysisSubsystem())
-register_subsystem("editing", EditingSubsystem())
-register_subsystem("uploader", UploaderSubsystem())
-register_subsystem("scheduler", SchedulerSubsystem())
-register_subsystem("templates", TemplateSubsystem())
-register_subsystem("worker", WorkerSubsystem())
 initialize_all()
 
 app = FastAPI(title=config.app_name, version="0.1.0")
@@ -48,19 +33,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(status.router, prefix="/status", tags=["status"])
-app.include_router(projects.router, prefix="/projects", tags=["projects"])
-app.include_router(pipeline.router, prefix="/pipeline", tags=["pipeline"])
-app.include_router(subsystems.router, prefix="/subsystems", tags=["subsystems"])
-app.include_router(events.router, prefix="/events", tags=["events"])
-app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
-app.include_router(transcription.router, prefix="/transcription", tags=["transcription"])
-app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
-app.include_router(uploader.router, prefix="/uploader", tags=["uploader"])
-app.include_router(editing.router, prefix="/editing", tags=["editing"])
-app.include_router(scheduler.router, prefix="/scheduler", tags=["scheduler"])
-app.include_router(templates.router, prefix="/templates", tags=["templates"])
-app.include_router(worker.router, prefix="/worker", tags=["worker"])
+app.include_router(status_router.router, prefix="/status", tags=["status"])
+app.include_router(projects_router.router, prefix="/projects", tags=["projects"])
+app.include_router(pipeline_router.router, prefix="/pipeline", tags=["pipeline"])
+app.include_router(subsystems_router.router, prefix="/subsystems", tags=["subsystems"])
+app.include_router(events_router.router, prefix="/events", tags=["events"])
+app.include_router(jobs_router.router, prefix="/jobs", tags=["jobs"])
+app.include_router(transcription_router.router, prefix="/transcription", tags=["transcription"])
+app.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
+app.include_router(uploader_router.router, prefix="/uploader", tags=["uploader"])
+app.include_router(editing_router.router, prefix="/editing", tags=["editing"])
+app.include_router(scheduler_router.router, prefix="/scheduler", tags=["scheduler"])
+app.include_router(templates_router.router, prefix="/templates", tags=["templates"])
+app.include_router(worker_router.router, prefix="/worker", tags=["worker"])
 
 
 @app.get("/info")

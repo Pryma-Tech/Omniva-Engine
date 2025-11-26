@@ -1,25 +1,26 @@
 """Upgraded EventBus (placeholder)."""
 
-from typing import Any, Callable, Dict, List
 import time
+from typing import Callable, Dict, List
 
 
 class MessageEnvelope:
     """Internal event message envelope."""
 
-    def __init__(self, event: str, payload: dict):
+    def __init__(self, event: str, payload: dict) -> None:
         self.event = event
         self.payload = payload
         self.timestamp = time.time()
 
     def to_dict(self) -> dict:
+        """Return a serializable representation of the message."""
         return {"event": self.event, "payload": self.payload, "timestamp": self.timestamp}
 
 
 class EventBus:
     """EventBus with history and wildcard support (placeholder)."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.listeners: Dict[str, List[Callable]] = {}
         self.wildcard_listeners: List[Callable] = []
         self.history: List[MessageEnvelope] = []
@@ -43,11 +44,11 @@ class EventBus:
         return self.publish(event, payload)
 
     def get_history(self) -> List[dict]:
-        return [h.to_dict() for h in self.history]
+        return [message.to_dict() for message in self.history]
 
     def status(self) -> dict:
         return {
-            "listeners": {k: len(v) for k, v in self.listeners.items()},
+            "listeners": {name: len(handlers) for name, handlers in self.listeners.items()},
             "wildcard_listeners": len(self.wildcard_listeners),
             "history_count": len(self.history),
             "status": "ok (placeholder)",
@@ -55,3 +56,7 @@ class EventBus:
 
 
 event_bus = EventBus()
+
+
+def get_event_bus() -> EventBus:
+    return event_bus

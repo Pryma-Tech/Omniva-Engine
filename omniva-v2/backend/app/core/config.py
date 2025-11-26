@@ -1,10 +1,9 @@
 """Configuration loader for Omniva Engine v2 (placeholder)."""
 # TODO: Load from YAML/env and validate schema.
 
+import os
 from dataclasses import dataclass
 from typing import Any, Dict
-
-import os
 
 
 @dataclass

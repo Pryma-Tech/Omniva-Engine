@@ -1,8 +1,18 @@
-"""Scraper subsystem (placeholder)."""
+"""Scraper subsystem for Omniva Engine v2 (placeholder)."""
+
+from app.core.registry import registry
+
 
 class ScraperSubsystem:
-    def initialize(self) -> None:
-        return None
+    """Placeholder scraper engine."""
+
+    name = "scraper"
+
+    def initialize(self) -> dict:
+        return {"status": "scraper subsystem initialized (placeholder)"}
 
     def status(self) -> dict:
-        return {"name": "scraper", "status": "idle (placeholder)"}
+        return {"name": self.name, "status": "ok (placeholder)"}
+
+
+registry.register_subsystem("scraper", ScraperSubsystem())

@@ -18,4 +18,4 @@ async def enqueue_job(job_type: str, payload: dict) -> dict:
 async def dequeue_job() -> dict:
     queue = get_job_queue()
     job = queue.dequeue()
-    return {"job": job}
+    return {"job": job.to_dict() if job else None}

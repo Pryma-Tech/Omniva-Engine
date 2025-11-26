@@ -1,24 +1,24 @@
 """Project routes (placeholder)."""
 
-from fastapi import APIRouter
 from typing import List
 
-from ...models.project import Project
+from fastapi import APIRouter
+
+from app.models.project import Project
 
 router = APIRouter()
 
-FAKE_PROJECTS: List[Project] = [
+_FAKE_PROJECTS: List[Project] = [
     Project(project_id=1, name="Demo Project", keywords=["ai", "clips"], recency_days=7, active=True)
 ]
 
 
-@router.get("/", response_model=List[Project])
-async def list_projects() -> List[Project]:
-    """Return placeholder projects."""
-    return FAKE_PROJECTS
+@router.get("/")
+async def list_projects() -> list:
+    return [project.dict() for project in _FAKE_PROJECTS]
 
 
-@router.post("/", response_model=Project)
-async def create_project(project: Project) -> Project:
-    FAKE_PROJECTS.append(project)
-    return project
+@router.post("/")
+async def create_project(project: Project) -> dict:
+    _FAKE_PROJECTS.append(project)
+    return project.dict()
