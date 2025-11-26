@@ -1,9 +1,12 @@
 """Settings module for Omniva Engine."""
-# TODO: Describe environment variables and defaults.
+# TODO: Load real secrets, API keys, and runtime configurations.
 
-from functools import lru_cache
+import json
+import os
 
 from pydantic import BaseSettings
+
+from utils.logger import logger
 
 
 class Settings(BaseSettings):
@@ -13,14 +16,22 @@ class Settings(BaseSettings):
     ENV: str = "development"
     DEBUG: bool = True
     LOG_LEVEL: str = "info"
-    # TODO: Add API tokens, database URLs, and other secret settings.
+    DATA_DIR: str = "static"
+    SECRETS_FILE: str = "config/secrets.json"
 
     class Config:
         env_file = ".env"
-        env_file_encoding = "utf-8"
+
+    def load_secrets(self) -> dict:
+        """
+        Load secret keys from JSON template.
+        TODO: Add real secret handling + validation.
+        """
+        logger.info("Loading secrets (placeholder)")
+        if not os.path.exists(self.SECRETS_FILE):
+            return {}
+        with open(self.SECRETS_FILE, encoding="utf-8") as file:
+            return json.load(file)
 
 
-@lru_cache
-def get_settings() -> Settings:
-    """Return cached settings instance for reuse."""
-    return Settings()
+settings = Settings()

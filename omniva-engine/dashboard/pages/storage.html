@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Storage Overview</h2>
+
+<pre id="storage-output">Loading...</pre>
+
+<script>
+fetch("/storage/info")
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("storage-output").textContent =
+            JSON.stringify(data, null, 2);
+    })
+    .catch(() => {
+        document.getElementById("storage-output").textContent = "Failed to load storage info (placeholder)";
+    });
+</script>
+{% endblock %}

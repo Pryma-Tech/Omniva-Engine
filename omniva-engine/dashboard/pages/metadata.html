@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Metadata Generator (Placeholder)</h2>
+
+<input id="topic" placeholder="Topic" />
+<input id="keywords" placeholder="comma,separated,keywords" />
+
+<button onclick="runMetadata()">Generate</button>
+
+<pre id="output">Result will appear here</pre>
+
+<script>
+function runMetadata() {
+    let topic = document.getElementById("topic").value;
+    let keywords = document.getElementById("keywords").value.split(",").map(k => k.trim());
+    fetch("/metadata/generate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({topic, keywords})
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("output").textContent =
+            JSON.stringify(data, null, 2);
+    })
+    .catch(() => {
+        document.getElementById("output").textContent = "Failed to generate metadata";
+    });
+}
+</script>
+
+{% endblock %}

@@ -1,11 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>Project View</title>
-</head>
-<body>
-    <h1>Project Detail</h1>
-    <p>Project dashboard placeholder.</p>
-</body>
-</html>
+{% extends "layout.html" %}
+{% block content %}
+<h2>Project Detail (Placeholder)</h2>
+
+<div class="section">
+    <h3>Project Information</h3>
+    <p>Name: TODO</p>
+    <p>Keywords: TODO</p>
+    <p>Recency: TODO</p>
+</div>
+
+<div class="section">
+    <h3>Creators</h3>
+    <ul>
+        <li>TODO Creator</li>
+    </ul>
+</div>
+
+<div class="section">
+    <h3>Render Queue</h3>
+    <ul>
+        <li>TODO queued tasks</li>
+    </ul>
+</div>
+
+<div class="section">
+    <h3>Upload Schedule</h3>
+    <p>TODO schedule details</p>
+</div>
+
+<button>Start Bot</button>
+<button>Stop Bot</button>
+{% endblock %}

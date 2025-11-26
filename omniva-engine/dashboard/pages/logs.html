@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>System Logs (Placeholder)</h2>
+
+<pre id="log-output">
+Loading logs...
+</pre>
+
+<script>
+fetch("/logs/view?lines=200")
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("log-output").textContent = data.logs;
+    })
+    .catch(() => {
+        document.getElementById("log-output").textContent = "Failed to load logs (placeholder)";
+    });
+</script>
+
+{% endblock %}

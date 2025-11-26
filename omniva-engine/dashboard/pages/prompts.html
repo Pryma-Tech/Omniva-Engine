@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Prompt Previewer (Placeholder)</h2>
+
+<input id="prompt-name" placeholder="Enter prompt name (analysis, editing, branding, metadata)" />
+<button onclick="loadPrompt()">Load Template</button>
+
+<pre id="template-box">Template will appear here</pre>
+
+<script>
+function loadPrompt() {
+    let name = document.getElementById("prompt-name").value;
+    fetch("/prompts/" + name)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("template-box").textContent =
+                data.template || "No template found";
+        })
+        .catch(() => {
+            document.getElementById("template-box").textContent = "Failed to load prompt";
+        });
+}
+</script>
+
+{% endblock %}

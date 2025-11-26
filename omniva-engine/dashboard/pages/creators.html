@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Creators (Placeholder)</h2>
+
+<div id="all-creators">Loading creators...</div>
+
+<h3>Add Creator</h3>
+<input id="platform" placeholder="tiktok / instagram / youtube" />
+<input id="url" placeholder="Username or profile URL" />
+<button onclick="addCreator()">Add</button>
+
+<script>
+function loadCreators() {
+    fetch("/creators")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("all-creators").innerHTML =
+                "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+        })
+        .catch(() => {
+            document.getElementById("all-creators").textContent = "Failed to load creators";
+        });
+}
+
+function addCreator() {
+    let platform = document.getElementById("platform").value;
+    let url = document.getElementById("url").value;
+
+    fetch("/creators", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({platform, url})
+    })
+    .then(() => loadCreators());
+}
+
+loadCreators();
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Projects</h2>
+
+<div id="project-list">Loading...</div>
+
+<script>
+fetch("/projects")
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("project-list").innerHTML =
+            "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+    })
+    .catch(() => {
+        document.getElementById("project-list").textContent = "Failed to load projects";
+    });
+</script>
+{% endblock %}
