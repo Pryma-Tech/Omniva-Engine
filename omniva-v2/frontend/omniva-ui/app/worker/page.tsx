@@ -2,24 +2,35 @@
 
 import { useEffect, useState } from "react";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
+const apiBase = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function WorkerPage() {
   const [status, setStatus] = useState<any>(null);
   const [heartbeat, setHeartbeat] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`${backendUrl}/worker/status`).then((r) => r.json()).then(setStatus);
-    fetch(`${backendUrl}/worker/heartbeat`).then((r) => r.json()).then(setHeartbeat);
-  }, []);
+    if (!apiBase) {
+      setStatus({ error: "Backend URL not configured" });
+      setHeartbeat(null);
+      return;
+    }
+    fetch(`${apiBase}/worker/status`)
+      .then((response) => response.json())
+      .then(setStatus)
+      .catch(() => setStatus({ error: "Failed to load status" }));
+    fetch(`${apiBase}/worker/heartbeat`)
+      .then((response) => response.json())
+      .then(setHeartbeat)
+      .catch(() => setHeartbeat({ error: "Failed to load heartbeat" }));
+  }, [apiBase]);
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Worker Engine (Placeholder)</h1>
       <h2>Status</h2>
-      <pre>{JSON.stringify(status, null, 2)}</pre>
+      <pre>{JSON.stringify(status ?? { status: "loading" }, null, 2)}</pre>
       <h2>Heartbeat</h2>
-      <pre>{JSON.stringify(heartbeat, null, 2)}</pre>
+      <pre>{JSON.stringify(heartbeat ?? { status: "loading" }, null, 2)}</pre>
     </div>
   );
 }

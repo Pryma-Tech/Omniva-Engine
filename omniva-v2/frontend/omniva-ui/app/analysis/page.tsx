@@ -2,22 +2,26 @@
 
 import { useEffect, useState } from "react";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
+const apiBase = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function AnalysisPage() {
   const [status, setStatus] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`${backendUrl}/analysis/status`)
-      .then((r) => r.json())
+    if (!apiBase) {
+      setStatus({ error: "Backend URL not configured" });
+      return;
+    }
+    fetch(`${apiBase}/analysis/status`)
+      .then((response) => response.json())
       .then(setStatus)
       .catch(() => setStatus({ error: "Failed to load status" }));
-  }, []);
+  }, [apiBase]);
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Analysis Engine (Placeholder)</h1>
-      <pre>{JSON.stringify(status, null, 2)}</pre>
+      <pre>{JSON.stringify(status ?? { status: "loading" }, null, 2)}</pre>
     </div>
   );
 }

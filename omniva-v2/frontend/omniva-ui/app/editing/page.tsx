@@ -4,33 +4,24 @@ import { useEffect, useState } from "react";
 
 const apiBase = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export default function SchedulerPage() {
+export default function EditingPage() {
   const [status, setStatus] = useState<any>(null);
-  const [rules, setRules] = useState<any[]>([]);
 
   useEffect(() => {
     if (!apiBase) {
       setStatus({ error: "Backend URL not configured" });
-      setRules([]);
       return;
     }
-    fetch(`${apiBase}/scheduler/status`)
+    fetch(`${apiBase}/editing/status`)
       .then((response) => response.json())
       .then(setStatus)
       .catch(() => setStatus({ error: "Failed to load status" }));
-    fetch(`${apiBase}/scheduler/rules`)
-      .then((response) => response.json())
-      .then(setRules)
-      .catch(() => setRules([]));
   }, [apiBase]);
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Scheduler Engine (Placeholder)</h1>
-      <h2>Status</h2>
+      <h1>Editing Engine (Placeholder)</h1>
       <pre>{JSON.stringify(status ?? { status: "loading" }, null, 2)}</pre>
-      <h2>Rules</h2>
-      <pre>{JSON.stringify(rules ?? [], null, 2)}</pre>
     </div>
   );
 }

@@ -4,7 +4,7 @@ export default function SubsystemsPage() {
     <section>
       <h1>Subsystem Registry (Placeholder)</h1>
       <ul>
-        {subsystems.map(name => (
+        {subsystems.map((name) => (
           <li key={name}>{name} subsystem status pending</li>
         ))}
       </ul>
