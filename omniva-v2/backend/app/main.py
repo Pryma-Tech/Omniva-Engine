@@ -19,6 +19,9 @@ from .api.routes import (
     analysis,
     editing,
     uploader,
+    scheduler,
+    templates,
+    worker,
 )
 
 config = load_config()
@@ -26,9 +29,15 @@ load_plugins()
 from .subsystems.analysis import AnalysisSubsystem
 from .subsystems.editing import EditingSubsystem
 from .subsystems.uploader import UploaderSubsystem
+from .subsystems.scheduler import SchedulerSubsystem
+from .subsystems.templates import TemplateSubsystem
+from .subsystems.worker import WorkerSubsystem
 register_subsystem("analysis", AnalysisSubsystem())
 register_subsystem("editing", EditingSubsystem())
 register_subsystem("uploader", UploaderSubsystem())
+register_subsystem("scheduler", SchedulerSubsystem())
+register_subsystem("templates", TemplateSubsystem())
+register_subsystem("worker", WorkerSubsystem())
 initialize_all()
 
 app = FastAPI(title=config.app_name, version="0.1.0")
@@ -49,6 +58,9 @@ app.include_router(transcription.router, prefix="/transcription", tags=["transcr
 app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
 app.include_router(uploader.router, prefix="/uploader", tags=["uploader"])
 app.include_router(editing.router, prefix="/editing", tags=["editing"])
+app.include_router(scheduler.router, prefix="/scheduler", tags=["scheduler"])
+app.include_router(templates.router, prefix="/templates", tags=["templates"])
+app.include_router(worker.router, prefix="/worker", tags=["worker"])
 
 
 @app.get("/info")
