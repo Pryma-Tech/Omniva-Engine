@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>FFmpeg Command Builder (Placeholder)</h2>
+
+<input id="path" placeholder="Input video path" />
+<button onclick="basic()">Build Basic Command</button>
+
+<pre id="output">Command will appear here</pre>
+
+<script>
+function basic() {
+    const p = document.getElementById("path").value;
+    fetch("/ffmpeg/basic?input_path=" + encodeURIComponent(p))
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("output").textContent = data.command;
+        })
+        .catch(() => {
+            document.getElementById("output").textContent = "Failed to build command";
+        });
+}
+</script>
+{% endblock %}

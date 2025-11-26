@@ -4,7 +4,7 @@
 import os
 
 from utils.logger import logger
-from utils.storage import storage_manager
+from storage import paths
 
 from .channel_name_generator import ChannelNameGenerator
 from .prompt_generator import PromptGenerator
@@ -31,7 +31,7 @@ class BrandingManager:
 
     def branding_asset_paths(self, project_id: int) -> dict:
         """Return placeholder storage paths for branding assets."""
-        base = storage_manager.project_dir(project_id)
+        base = paths.project_dir(project_id)
         return {
             "logo": os.path.join(base, "logo.png"),
             "banner": os.path.join(base, "banner.png"),

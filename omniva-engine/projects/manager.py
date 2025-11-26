@@ -19,6 +19,11 @@ class ProjectManager:
         self.next_id += 1
         project = Project(pid, name, keywords, recency_days)
         self.projects[pid] = project
+        try:
+            from api.main import log_manager
+            log_manager.log("projects", f"Created project {pid} (placeholder)")
+        except Exception:  # pragma: no cover
+            pass
         return project
 
     def get(self, project_id: int):
@@ -31,16 +36,31 @@ class ProjectManager:
         project = self.get(project_id)
         if project:
             project.keywords = keywords
+            try:
+                from api.main import log_manager
+                log_manager.log("projects", f"Updated keywords for project {project_id} (placeholder)")
+            except Exception:  # pragma: no cover
+                pass
         return project
 
     def add_creator(self, project_id: int, creator: dict):
         project = self.get(project_id)
         if project:
             project.creators.append(creator)
+            try:
+                from api.main import log_manager
+                log_manager.log("projects", f"Added creator to project {project_id} (placeholder)")
+            except Exception:  # pragma: no cover
+                pass
         return project
 
     def toggle_active(self, project_id: int):
         project = self.get(project_id)
         if project:
             project.active = not project.active
+            try:
+                from api.main import log_manager
+                log_manager.log("projects", f"Toggled project {project_id} active state (placeholder)")
+            except Exception:  # pragma: no cover
+                pass
         return project

@@ -16,21 +16,39 @@ from ai.templates.metadata import metadata_prompt
 from metadata.generator import MetadataGenerator
 from projects.manager import ProjectManager
 from projects.creators.manager import CreatorManager
+from pipeline.orchestrator import ClipPipelineOrchestrator
+from autonomous.manager import AutonomousModeManager
+from pipeline.history.manager import PipelineHistoryManager
+from errors.manager import ErrorManager
+from pipeline.visualization.manager import PipelineVisualizationManager
+from logs.manager import LogManager
+from ffmpeg.processor import FFmpegProcessor
+from storage.manager import StorageManager
+from downloads.manager import DownloadManager
+from transcription.manager import TranscriptionManager
 from .routes import (
     auth as auth_routes,
+    autonomous as autonomous_router,
     bot_control,
     branding as branding_router,
     clips,
     config as config_routes,
     creators,
+    downloads as downloads_router,
+    errors as errors_router,
+    transcription as transcription_router,
+    ffmpeg as ffmpeg_router,
+    history as history_router,
     logs as logs_router,
     metadata as metadata_router,
+    pipeline as pipeline_router,
     projects,
     prompts as prompts_router,
     storage as storage_router,
     tasks,
     uploads,
     videos,
+    visualization as visualization_router,
     youtube as youtube_router,
 )
 
@@ -40,6 +58,16 @@ prompt_engine = PromptEngine()
 metadata_generator = MetadataGenerator(prompt_engine)
 project_manager = ProjectManager()
 creator_manager = CreatorManager()
+clip_orchestrator = ClipPipelineOrchestrator(history=pipeline_history, errors=error_manager)
+autonomous_manager = AutonomousModeManager()
+pipeline_history = PipelineHistoryManager()
+error_manager = ErrorManager()
+pipeline_visualizer = PipelineVisualizationManager()
+log_manager = LogManager()
+ffmpeg_processor = FFmpegProcessor()
+storage_manager = StorageManager()
+download_manager = DownloadManager()
+transcription_manager = TranscriptionManager()
 
 
 def register_prompt_templates() -> None:
@@ -67,6 +95,16 @@ async def on_startup() -> None:
     app.state.worker_manager = worker_manager
     app.state.project_manager = project_manager
     app.state.creator_manager = creator_manager
+    app.state.clip_orchestrator = clip_orchestrator
+    app.state.autonomous_manager = autonomous_manager
+    app.state.pipeline_history = pipeline_history
+    app.state.error_manager = error_manager
+    app.state.pipeline_visualizer = pipeline_visualizer
+    app.state.log_manager = log_manager
+    app.state.ffmpeg_processor = ffmpeg_processor
+    app.state.storage_manager = storage_manager
+    app.state.download_manager = download_manager
+    app.state.transcription_manager = transcription_manager
     register_prompt_templates()
     # TODO: Connect to the database, warm caches, and start workers.
 
@@ -135,11 +173,15 @@ async def youtube_setup_page(request: Request):
 
 app.include_router(projects.router, prefix="/projects", tags=["projects"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
+app.include_router(autonomous_router.router, prefix="/autonomous", tags=["autonomous"])
 app.include_router(bot_control.router, prefix="/bot", tags=["bot"])
 app.include_router(logs_router.router, prefix="/logs", tags=["logs"])
 app.include_router(storage_router.router, prefix="/storage", tags=["storage"])
+app.include_router(history_router.router, prefix="/history", tags=["history"])
 app.include_router(prompts_router.router, prefix="/prompts", tags=["prompts"])
 app.include_router(metadata_router.router, prefix="/metadata", tags=["metadata"])
+app.include_router(pipeline_router.router, prefix="/pipeline", tags=["pipeline"])
+app.include_router(downloads_router.router, prefix="/downloads", tags=["downloads"])
 app.include_router(uploads.router, prefix="/uploads", tags=["uploads"])
 app.include_router(config_routes.router, prefix="/config", tags=["config"])
 app.include_router(creators.router, prefix="/creators", tags=["creators"])

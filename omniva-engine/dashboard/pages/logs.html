@@ -2,19 +2,27 @@
 {% block content %}
 <h2>System Logs (Placeholder)</h2>
 
-<pre id="log-output">
-Loading logs...
-</pre>
+<input id="filter" placeholder="Filter by subsystem (optional)" />
+<button onclick="loadLogs()">Load Logs</button>
+
+<pre id="output">Logs will appear here</pre>
 
 <script>
-fetch("/logs/view?lines=200")
-    .then(r => r.json())
-    .then(data => {
-        document.getElementById("log-output").textContent = data.logs;
-    })
-    .catch(() => {
-        document.getElementById("log-output").textContent = "Failed to load logs (placeholder)";
-    });
-</script>
+function loadLogs() {
+    let subsystem = document.getElementById("filter").value;
+    let url = subsystem ? "/logs/" + subsystem : "/logs";
 
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("output").textContent =
+                JSON.stringify(data, null, 2);
+        })
+        .catch(() => {
+            document.getElementById("output").textContent = "Failed to load logs";
+        });
+}
+
+loadLogs();
+</script>
 {% endblock %}

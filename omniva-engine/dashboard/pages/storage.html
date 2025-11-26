@@ -1,18 +1,37 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Storage Overview</h2>
+<h2>Storage Manager (Placeholder)</h2>
 
-<pre id="storage-output">Loading...</pre>
+<input id="pid" placeholder="Project ID" />
+<button onclick="loadDirs()">Get Directories</button>
+
+<pre id="dirs">Project directories will appear here</pre>
+
+<h3>Storage Stats</h3>
+<pre id="stats">Loading...</pre>
 
 <script>
-fetch("/storage/info")
+function loadDirs() {
+    const pid = document.getElementById("pid").value;
+    fetch("/storage/project/" + pid)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("dirs").textContent =
+                JSON.stringify(data, null, 2);
+        })
+        .catch(() => {
+            document.getElementById("dirs").textContent = "Failed to load directories";
+        });
+}
+
+fetch("/storage/stats")
     .then(r => r.json())
     .then(data => {
-        document.getElementById("storage-output").textContent =
+        document.getElementById("stats").textContent =
             JSON.stringify(data, null, 2);
     })
     .catch(() => {
-        document.getElementById("storage-output").textContent = "Failed to load storage info (placeholder)";
+        document.getElementById("stats").textContent = "Failed to load stats";
     });
 </script>
 {% endblock %}

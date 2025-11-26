@@ -9,7 +9,7 @@ from workers.scheduler.schedule_manager import ScheduleManager
 from workers.scraper.scraper_controller import ScraperController
 from workers.analyzer.viral_analyzer import ViralAnalyzer
 from workers.job_queue import JobQueue
-from utils.storage import storage_manager
+from storage import paths
 
 logger.info("WorkerManager module loaded (placeholder).")
 
@@ -27,7 +27,7 @@ class WorkerManager:
     def queue_scrape(self, project_id: int, creator: dict) -> dict:
         """Enqueue scraping job."""
         job = {"type": "scrape", "project_id": project_id, "creator": creator}
-        sample_path = storage_manager.raw_video_path(project_id, "placeholder.mp4")
+        sample_path = paths.downloads_dir(project_id) + "/placeholder.mp4"
         logger.info("Using storage path (placeholder): %s", sample_path)
         return self.queue.enqueue(job)
 
@@ -87,6 +87,11 @@ class WorkerManager:
         if not job:
             return {"status": "no jobs"}
         logger.info("Running job (placeholder): %s", job)
+        try:
+            from api.main import log_manager
+            log_manager.log("worker_manager", f"Processed job {job}")
+        except Exception:  # pragma: no cover
+            pass
         # TODO: execute actual controller logic based on job type.
         return job
 
@@ -105,3 +110,10 @@ class WorkerManager:
 # - Integrate database logging for job events
 # - Handle retries, backoff, failure logging
 # - Add distributed queue support (Redis/RQ or Celery)
+
+# TODO: Pipeline will enqueue:
+# - scrape job
+# - analysis job
+# - edit job
+# - metadata job
+# - upload job

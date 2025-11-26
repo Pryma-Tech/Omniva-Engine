@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>System Errors (Placeholder)</h2>
+
+<div id="errors">Loading...</div>
+
+<script>
+fetch("/errors")
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("errors").innerHTML =
+            "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+    })
+    .catch(() => {
+        document.getElementById("errors").textContent = "Failed to load errors";
+    });
+</script>
+{% endblock %}

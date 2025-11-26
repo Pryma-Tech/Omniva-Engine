@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Download Manager (Placeholder)</h2>
+
+<h3>Trigger Fake Download</h3>
+<input id="pid" placeholder="Project ID" />
+<input id="platform" placeholder="tiktok / instagram / youtube" />
+<input id="source" placeholder="Profile URL or post link" />
+<button onclick="runDownload()">Run</button>
+
+<pre id="output">Results will appear here</pre>
+
+<h3>All Download Jobs</h3>
+<pre id="all">Loading...</pre>
+
+<script>
+function runDownload() {
+    const pid = document.getElementById("pid").value;
+    const platform = document.getElementById("platform").value;
+    const source = document.getElementById("source").value;
+
+    fetch("/downloads/run", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({project_id: pid, platform, source})
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+        loadAll();
+    })
+    .catch(() => {
+        document.getElementById("output").textContent = "Failed to run download";
+    });
+}
+
+function loadAll() {
+    fetch("/downloads")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("all").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(() => {
+            document.getElementById("all").textContent = "Failed to load downloads";
+        });
+}
+
+loadAll();
+</script>
+{% endblock %}
