@@ -8,6 +8,7 @@ from app.core.plugins import load_plugins
 from app.core.registry import initialize_all, list_subsystems
 from app.core.job_queue import get_job_queue
 from app.api.routes import analysis as analysis_router
+from app.api.routes import download as download_router
 from app.api.routes import editing as editing_router
 from app.api.routes import events as events_router
 from app.api.routes import jobs as jobs_router
@@ -41,6 +42,7 @@ app.include_router(events_router.router, prefix="/events", tags=["events"])
 app.include_router(jobs_router.router, prefix="/jobs", tags=["jobs"])
 app.include_router(transcription_router.router, prefix="/transcription", tags=["transcription"])
 app.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
+app.include_router(download_router.router, prefix="/download", tags=["download"])
 app.include_router(uploader_router.router, prefix="/uploader", tags=["uploader"])
 app.include_router(editing_router.router, prefix="/editing", tags=["editing"])
 app.include_router(scheduler_router.router, prefix="/scheduler", tags=["scheduler"])
