@@ -1,0 +1,31 @@
+"""
+FFmpeg helper routines for clip extraction and formatting.
+"""
+
+import ffmpeg
+
+
+def cut_clip(input_path: str, output_path: str, start: float, end: float) -> str:
+    """Trim the input clip to the requested start/end range."""
+    (
+        ffmpeg.input(input_path, ss=start, to=end)
+        .output(output_path, vcodec="libx264", acodec="aac", strict="experimental")
+        .overwrite_output()
+        .run(quiet=True)
+    )
+    return output_path
+
+
+def convert_to_vertical(input_path: str, output_path: str) -> str:
+    """
+    Convert arbitrary footage to a 9:16 vertical frame with center crop.
+    """
+    stream = ffmpeg.input(input_path)
+    video = stream.filter("scale", -1, 1920).filter("crop", 1080, 1920)
+    audio = stream.audio
+    (
+        ffmpeg.output(video, audio, output_path, vcodec="libx264", acodec="aac")
+        .overwrite_output()
+        .run(quiet=True)
+    )
+    return output_path

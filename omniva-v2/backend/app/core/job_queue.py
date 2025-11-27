@@ -1,9 +1,7 @@
 """In-memory job queue (placeholder)."""
 # TODO: Replace with distributed queue (Redis, RabbitMQ, etc.).
 
-import json
 import logging
-import os
 from collections import deque
 from dataclasses import dataclass
 from typing import Any, Deque, Dict, Optional
@@ -46,29 +44,24 @@ class JobQueue:
     def process(self, job: Job) -> Any:
         """Process a job and attach the placeholder result."""
         logger.info("Processing job %s (placeholder)", job.type)
-        if job.type == "render_clips":
-            editing = get_subsystem("editing")
-            candidates = job.payload.get("candidates", [])
-            job.result = editing.render_candidates(candidates)
-        elif job.type == "analyze":
+        if job.type == "analyze":
             analysis = get_subsystem("analysis")
             job.result = analysis.analyze_transcript(
                 filepath=job.payload.get("filepath"),
                 project_id=job.payload.get("project_id", 0),
                 keywords=job.payload.get("keywords", []),
             )
+        elif job.type == "edit_clip":
+            editor = get_subsystem("editing")
+            job.result = editor.edit_clip(
+                analysis_filepath=job.payload.get("analysis_filepath", ""),
+                project_id=job.payload.get("project_id", 0),
+                top_n=job.payload.get("top_n", 1),
+            )
         elif job.type == "upload_clips":
             uploader = get_subsystem("uploader")
             renders = job.payload.get("renders", [])
             job.result = uploader.upload(renders)
-        elif job.type == "edit_clip":
-            editing = get_subsystem("editing")
-            analysis_filepath = job.payload.get("analysis_filepath", "")
-            candidates = []
-            if analysis_filepath and os.path.exists(analysis_filepath):
-                with open(analysis_filepath, "r", encoding="utf-8") as candidate_file:
-                    candidates = json.load(candidate_file)
-            job.result = editing.render_candidates(candidates)
         elif job.type == "transcribe":
             transcription = get_subsystem("transcription")
             job.result = transcription.transcribe_file(
