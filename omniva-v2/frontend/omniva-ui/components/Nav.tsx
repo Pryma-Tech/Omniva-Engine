@@ -11,6 +11,7 @@ const links = [
   { href: "/scheduler", label: "Scheduler" },
   { href: "/uploader", label: "Uploader" },
   { href: "/autonomous", label: "Autonomous" },
+  { href: "/intelligence", label: "Intelligence" },
   { href: "/health", label: "Health" },
   { href: "/events", label: "Events" },
   { href: "/worker", label: "Worker" },

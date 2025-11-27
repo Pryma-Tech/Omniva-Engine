@@ -16,6 +16,7 @@ from app.api.routes import editing as editing_router
 from app.api.routes import events as events_router
 from app.api.routes import jobs as jobs_router
 from app.api.routes import health as health_router
+from app.api.routes import intelligence as intelligence_router
 from app.api.routes import pipeline as pipeline_router
 from app.api.routes import projects as projects_router
 from app.api.routes import scheduler as scheduler_router
@@ -31,6 +32,7 @@ from app.subsystems.projects.project_manager import ProjectManager
 from app.subsystems.orchestrator.pipeline_orchestrator import PipelineOrchestrator
 from app.subsystems.autonomous.autonomous_engine import AutonomousEngine
 from app.subsystems.discovery.discovery_engine import DiscoveryEngine
+from app.subsystems.intelligence.intelligence_engine import IntelligenceEngine
 
 config = load_config()
 register_subsystem("templates", TemplateStore())
@@ -38,6 +40,7 @@ register_subsystem("project_manager", ProjectManager())
 register_subsystem("orchestrator", PipelineOrchestrator())
 register_subsystem("autonomous", AutonomousEngine())
 register_subsystem("discovery", DiscoveryEngine())
+register_subsystem("intelligence", IntelligenceEngine())
 load_plugins()
 initialize_all()
 
@@ -89,6 +92,7 @@ app.include_router(scheduler_router.router, prefix="/scheduler", tags=["schedule
 app.include_router(templates_router.router, prefix="/templates", tags=["templates"])
 app.include_router(worker_router.router, prefix="/worker", tags=["worker"])
 app.include_router(workers_router.router, prefix="/workers", tags=["workers"])
+app.include_router(intelligence_router.router, prefix="/intelligence", tags=["intelligence"])
 
 
 @app.get("/info")
