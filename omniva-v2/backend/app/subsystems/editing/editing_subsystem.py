@@ -75,7 +75,13 @@ class EditingSubsystem:
             "clips": rendered_paths,
         }
         event_bus.publish("editing_complete", result)
-        job_queue.enqueue("upload_clips", {"project_id": project_id, "clips": rendered_paths})
+        job_queue.enqueue(
+            "upload_clip",
+            {
+                "project_id": project_id,
+                "clips": rendered_paths,
+            },
+        )
         return result
 
     def status(self) -> Dict[str, str]:

@@ -1,7 +1,8 @@
-"""Uploader subsystem API (placeholder)."""
+"""Uploader subsystem API."""
 
 from fastapi import APIRouter
 
+from app.core.job_queue import job_queue
 from app.core.registry import registry
 
 router = APIRouter()
@@ -13,8 +14,9 @@ async def uploader_status() -> dict:
     return subsystem.status()
 
 
-@router.post("/upload")
-async def manual_upload(data: dict) -> dict:
-    subsystem = registry.get_subsystem("uploader")
-    renders = data.get("renders", [])
-    return subsystem.upload(renders)
+@router.post("/run")
+async def run_upload(data: dict) -> dict:
+    clips = data.get("clips", [])
+    project_id = data.get("project_id", 0)
+    job_queue.enqueue("upload_clip", {"clips": clips, "project_id": project_id})
+    return {"queued": True, "clips": clips, "project_id": project_id}

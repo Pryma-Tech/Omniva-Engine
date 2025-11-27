@@ -58,10 +58,12 @@ class JobQueue:
                 project_id=job.payload.get("project_id", 0),
                 top_n=job.payload.get("top_n", 1),
             )
-        elif job.type == "upload_clips":
+        elif job.type == "upload_clip":
             uploader = get_subsystem("uploader")
-            renders = job.payload.get("renders", [])
-            job.result = uploader.upload(renders)
+            job.result = uploader.upload_clips(
+                clips=job.payload.get("clips", []),
+                project_id=job.payload.get("project_id", 0),
+            )
         elif job.type == "transcribe":
             transcription = get_subsystem("transcription")
             job.result = transcription.transcribe_file(
