@@ -57,3 +57,15 @@ async def get_trending(project_id: int) -> dict:
 async def semantic_rank(project_id: int, clips: list) -> list:
     intel = _engine()
     return intel.semantic_rank(project_id, clips)
+
+
+@router.get("/audio-trends/{project_id}")
+async def get_audio_trends(project_id: int) -> dict:
+    intel = _engine()
+    return intel.get_audio_trends(project_id)
+
+
+@router.post("/audio-match/{project_id}")
+async def audio_match(project_id: int, clip_meta: dict) -> dict:
+    intel = _engine()
+    return intel.audio_trends.match(project_id, clip_meta)

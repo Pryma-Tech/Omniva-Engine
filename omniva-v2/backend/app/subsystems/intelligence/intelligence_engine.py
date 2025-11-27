@@ -64,5 +64,8 @@ class IntelligenceEngine:
     def semantic_rank(self, project_id: int, clips: list) -> list:
         return self.semantic_ranker.rank(project_id, clips)
 
+    def get_audio_trends(self, project_id: int) -> dict:
+        return self.audio_trends.store.get_trending(project_id)
+
     def status(self) -> dict:
         return {"mode": self.current_mode, "available_modes": list(self.modes.keys())}
