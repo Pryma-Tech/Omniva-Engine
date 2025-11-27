@@ -13,3 +13,5 @@ google-auth-httplib2
 Pillow
 apscheduler
 python-dateutil
+beautifulsoup4
+requests

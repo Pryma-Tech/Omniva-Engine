@@ -6,6 +6,7 @@ const links = [
   { href: "/editing", label: "Editing" },
   { href: "/download", label: "Download" },
   { href: "/transcription", label: "Transcription" },
+  { href: "/discovery", label: "Discovery" },
   { href: "/templates", label: "Templates" },
   { href: "/scheduler", label: "Scheduler" },
   { href: "/uploader", label: "Uploader" },

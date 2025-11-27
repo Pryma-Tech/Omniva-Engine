@@ -10,6 +10,7 @@ from app.core.registry import initialize_all, list_subsystems, register_subsyste
 from app.core.job_queue import get_job_queue
 from app.api.routes import analysis as analysis_router
 from app.api.routes import autonomous as autonomous_router
+from app.api.routes import discovery as discovery_router
 from app.api.routes import download as download_router
 from app.api.routes import editing as editing_router
 from app.api.routes import events as events_router
@@ -29,12 +30,14 @@ from app.subsystems.templates.template_store import TemplateStore
 from app.subsystems.projects.project_manager import ProjectManager
 from app.subsystems.orchestrator.pipeline_orchestrator import PipelineOrchestrator
 from app.subsystems.autonomous.autonomous_engine import AutonomousEngine
+from app.subsystems.discovery.discovery_engine import DiscoveryEngine
 
 config = load_config()
 register_subsystem("templates", TemplateStore())
 register_subsystem("project_manager", ProjectManager())
 register_subsystem("orchestrator", PipelineOrchestrator())
 register_subsystem("autonomous", AutonomousEngine())
+register_subsystem("discovery", DiscoveryEngine())
 load_plugins()
 initialize_all()
 
@@ -49,6 +52,7 @@ reliability_events = [
     "editing_complete",
     "upload_complete",
     "autonomous_pipeline_triggered",
+    "discovery_new_posts",
     "job_retry_scheduled",
     "job_requeued",
     "job_timeout",
@@ -74,6 +78,7 @@ app.include_router(subsystems_router.router, prefix="/subsystems", tags=["subsys
 app.include_router(events_router.router, prefix="/events", tags=["events"])
 app.include_router(jobs_router.router, prefix="/jobs", tags=["jobs"])
 app.include_router(health_router.router, prefix="/health", tags=["health"])
+app.include_router(discovery_router.router, prefix="/discover", tags=["discovery"])
 app.include_router(autonomous_router.router, prefix="/autonomous", tags=["autonomous"])
 app.include_router(transcription_router.router, prefix="/transcription", tags=["transcription"])
 app.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])

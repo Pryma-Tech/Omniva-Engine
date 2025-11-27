@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import List
 
 from app.core.event_bus import event_bus
+from app.core.job_queue import job_queue
 from app.core.registry import registry
 
 from .autonomous_store import AutonomousStore
@@ -33,7 +34,7 @@ class AutonomousEngine:
         """Core loop — checks projects and triggers pipelines."""
         self.running = True
         project_manager = registry.get_subsystem("project_manager")
-        orchestrator = registry.get_subsystem("orchestrator")
+        discovery = registry.get_subsystem("discovery")
 
         while self.running:
             project_ids = [int(name.split(".")[0]) for name in self._project_files()]
@@ -46,12 +47,28 @@ class AutonomousEngine:
 
                 config = project_manager.get(project_id)
                 creators = config.get("creators", [])
+                if not creators:
+                    continue
 
-                orchestrator.run_pipeline(project_id, creators)
+                new_posts = discovery.discover_for_project(project_id)
+                if not new_posts:
+                    await asyncio.sleep(1)
+                    continue
+
+                for link in new_posts:
+                    job_queue.enqueue(
+                        "download_url",
+                        {"url": link, "project_id": project_id},
+                    )
+
                 state["last_run"] = datetime.utcnow().isoformat()
-                state["clips_generated_today"] = state.get("clips_generated_today", 0) + 1
+                state["clips_generated_today"] = state.get("clips_generated_today", 0) + len(new_posts)
                 self.store.save_state(project_id, state)
 
+                event_bus.publish(
+                    "discovery_new_posts",
+                    {"project_id": project_id, "new_posts": new_posts},
+                )
                 event_bus.publish(
                     "autonomous_pipeline_triggered",
                     {"project_id": project_id, "timestamp": state["last_run"]},
