@@ -1,140 +1,175 @@
 """
-In-memory job queue with retry tracking.
+Persistent job queue with retry tracking and execution helpers.
 """
 
-import logging
-from collections import deque
-from dataclasses import dataclass, field
-from typing import Any, Deque, Dict, Optional
+import json
+import os
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 from app.core.registry import get_subsystem
 
-logger = logging.getLogger("omniva_v2")
 
+class JobWrapper:
+    """Lightweight proxy that exposes run()/metadata helpers."""
 
-@dataclass
-class Job:
-    """Lightweight representation of a queued job."""
+    def __init__(self, data: Dict[str, Any]) -> None:
+        self._data = data
 
-    id: int
-    type: str
-    payload: Dict[str, Any]
-    attempts: int = 0
-    status: str = "queued"
-    result: Optional[Any] = None
-    error: Optional[str] = None
+    @property
+    def id(self) -> str:
+        return self._data["id"]
+
+    def __getitem__(self, key: str) -> Any:
+        return self._data[key]
+
+    @property
+    def type(self) -> str:
+        return self._data["type"]
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "type": self.type,
-            "payload": self.payload,
-            "attempts": self.attempts,
-            "status": self.status,
-            "result": self.result,
-            "error": self.error,
-        }
+        return dict(self._data)
 
     def run(self) -> Any:
-        """Execute job logic."""
-        return _execute_job(self)
+        return _execute_job(self._data)
 
 
 class JobQueue:
-    """Simple FIFO queue with retry support."""
+    """File-backed job queue with retry state."""
 
     def __init__(self) -> None:
-        self._queue: Deque[Job] = deque()
-        self._jobs: Dict[int, Job] = {}
-        self._next_id = 1
+        self.queue: List[str] = []
+        self.jobs: Dict[str, Dict[str, Any]] = {}
+        self.storage_dir = os.path.join("storage", "jobs")
+        os.makedirs(self.storage_dir, exist_ok=True)
+        self._load_existing()
 
-    def enqueue(self, job_type: str, payload: Dict[str, Any]) -> Job:
-        job = Job(id=self._next_id, type=job_type, payload=payload)
-        self._queue.append(job)
-        self._jobs[job.id] = job
-        self._next_id += 1
-        logger.info("Enqueued job %s (#%s)", job.type, job.id)
-        return job
+    def _path(self, job_id: str) -> str:
+        return os.path.join(self.storage_dir, f"{job_id}.json")
 
-    def dequeue(self) -> Optional[Job]:
-        if not self._queue:
+    def _load_existing(self) -> None:
+        for file_name in os.listdir(self.storage_dir):
+            if not file_name.endswith(".json"):
+                continue
+            job_id = file_name.replace(".json", "")
+            with open(self._path(job_id), "r", encoding="utf-8") as job_file:
+                job = json.load(job_file)
+                self.jobs[job_id] = job
+                if job.get("status") in {"queued", "retrying", "running"}:
+                    self.queue.append(job_id)
+
+    def enqueue(self, job_type: str, payload: Dict[str, Any]) -> str:
+        job_id = str(uuid4())
+        job = {
+            "id": job_id,
+            "type": job_type,
+            "payload": payload,
+            "created": datetime.utcnow().isoformat(),
+            "status": "queued",
+            "attempts": 0,
+        }
+        self.jobs[job_id] = job
+        self.queue.append(job_id)
+        self._save(job)
+        return job_id
+
+    def dequeue(self) -> Optional[JobWrapper]:
+        if not self.queue:
             return None
-        job = self._queue.popleft()
-        job.status = "processing"
-        return job
+        job_id = self.queue.pop(0)
+        job = self.jobs[job_id]
+        job["status"] = "running"
+        job["started"] = datetime.utcnow().isoformat()
+        self._save(job)
+        return JobWrapper(job)
 
-    def finish_job(self, job_id: int, result: Any) -> None:
-        job = self._jobs.get(job_id)
+    def finish_job(self, job_id: str, result: Any) -> None:
+        job = self.jobs.get(job_id)
         if not job:
             return
-        job.status = "completed"
-        job.result = result
-        logger.info("Job %s completed", job_id)
+        job["status"] = "done"
+        job["finished"] = datetime.utcnow().isoformat()
+        job["result"] = result
+        self._save(job)
 
-    def fail_job(self, job_id: int, error: str) -> None:
-        job = self._jobs.get(job_id)
+    def fail_job(self, job_id: str, error: str) -> None:
+        job = self.jobs.get(job_id)
         if not job:
             return
-        job.attempts += 1
-        job.error = error
-        if job.attempts < 3:
-            job.status = "retry"
-            self._queue.append(job)
-            logger.warning("Job %s failed (%s). Retrying (%s/3).", job_id, error, job.attempts)
-        else:
-            job.status = "failed"
-            logger.error("Job %s failed permanently: %s", job_id, error)
+        job["attempts"] += 1
+        job["status"] = "failed"
+        job["error"] = error
+        job["finished"] = datetime.utcnow().isoformat()
+        self._save(job)
 
-    def __len__(self) -> int:
-        return len(self._queue)
+    def retry_job(self, job_id: str, backoff_seconds: int) -> None:
+        job = self.jobs.get(job_id)
+        if not job:
+            return
+        job["attempts"] += 1
+        job["status"] = "retrying"
+        job["retry_after"] = (datetime.utcnow() + timedelta(seconds=backoff_seconds)).isoformat()
+        self._save(job)
+
+    def requeue(self, job_id: str) -> None:
+        job = self.jobs.get(job_id)
+        if not job:
+            return
+        job["status"] = "queued"
+        job.pop("retry_after", None)
+        self.queue.append(job_id)
+        self._save(job)
+
+    def _save(self, job: Dict[str, Any]) -> None:
+        with open(self._path(job["id"]), "w", encoding="utf-8") as job_file:
+            json.dump(job, job_file, indent=2)
 
 
-def _execute_job(job: Job) -> Any:
-    """Route job execution to the correct subsystem."""
-    if job.type == "analyze":
+def _execute_job(job: Dict[str, Any]) -> Any:
+    job_type = job["type"]
+    payload = job.get("payload", {})
+    if job_type == "analyze":
         analysis = get_subsystem("analysis")
         return analysis.analyze_transcript(
-            filepath=job.payload.get("filepath"),
-            project_id=job.payload.get("project_id", 0),
-            keywords=job.payload.get("keywords", []),
+            filepath=payload.get("filepath"),
+            project_id=payload.get("project_id", 0),
+            keywords=payload.get("keywords", []),
         )
-    if job.type == "edit_clip":
+    if job_type == "edit_clip":
         editor = get_subsystem("editing")
         return editor.edit_clip(
-            analysis_filepath=job.payload.get("analysis_filepath", ""),
-            project_id=job.payload.get("project_id", 0),
-            top_n=job.payload.get("top_n", 1),
+            analysis_filepath=payload.get("analysis_filepath", ""),
+            project_id=payload.get("project_id", 0),
+            top_n=payload.get("top_n", 1),
         )
-    if job.type == "upload_clip":
+    if job_type == "upload_clip":
         uploader = get_subsystem("uploader")
         return uploader.upload_clips(
-            clips=job.payload.get("clips", []),
-            project_id=job.payload.get("project_id", 0),
+            clips=payload.get("clips", []),
+            project_id=payload.get("project_id", 0),
         )
-    if job.type == "transcribe":
+    if job_type == "transcribe":
         transcription = get_subsystem("transcription")
         return transcription.transcribe_file(
-            filepath=job.payload.get("filepath"),
-            project_id=job.payload.get("project_id", 0),
+            filepath=payload.get("filepath"),
+            project_id=payload.get("project_id", 0),
         )
-    if job.type == "download_url":
+    if job_type == "download_url":
         downloader = get_subsystem("download")
         return downloader.download_url(
-            url=job.payload.get("url"),
-            project_id=job.payload.get("project_id", 0),
+            url=payload.get("url"),
+            project_id=payload.get("project_id", 0),
         )
-    if job.type == "start_pipeline":
-        project_id = job.payload.get("project_id", 0)
-        links = job.payload.get("links", [])
-        for link in links:
-            job_queue.enqueue("download_url", {"url": link, "project_id": project_id})
-        return {"status": "pipeline triggered", "project_id": project_id}
-    if job.type == "run_pipeline":
-        return {
-            "status": "pipeline executed (placeholder)",
-            "project_id": job.payload.get("project_id"),
-        }
-    return {"status": "unknown job", "type": job.type}
+    if job_type == "start_pipeline":
+        orchestrator = get_subsystem("orchestrator")
+        project_manager = get_subsystem("project_manager")
+        config = project_manager.get(payload.get("project_id", 0))
+        creators = config.get("creators", [])
+        return orchestrator.run_pipeline(payload.get("project_id", 0), creators)
+    if job_type == "run_pipeline":
+        return {"status": "pipeline executed (placeholder)", "project_id": payload.get("project_id")}
+    return {"status": "unknown job", "type": job_type}
 
 
 job_queue = JobQueue()

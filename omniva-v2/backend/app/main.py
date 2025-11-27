@@ -14,6 +14,7 @@ from app.api.routes import download as download_router
 from app.api.routes import editing as editing_router
 from app.api.routes import events as events_router
 from app.api.routes import jobs as jobs_router
+from app.api.routes import health as health_router
 from app.api.routes import pipeline as pipeline_router
 from app.api.routes import projects as projects_router
 from app.api.routes import scheduler as scheduler_router
@@ -41,14 +42,21 @@ async def global_event_logger(data: dict):
     print(f"[EVENT] {data}")
 
 
-for evt in [
+reliability_events = [
     "pipeline_started",
     "transcription_complete",
     "analysis_complete",
     "editing_complete",
     "upload_complete",
     "autonomous_pipeline_triggered",
-]:
+    "job_retry_scheduled",
+    "job_requeued",
+    "job_timeout",
+    "job_failed",
+]
+
+
+for evt in reliability_events:
     event_bus.subscribe(evt, global_event_logger)
 
 app = FastAPI(title=config.app_name, version="0.1.0")
@@ -65,6 +73,7 @@ app.include_router(pipeline_router.router, prefix="/pipeline", tags=["pipeline"]
 app.include_router(subsystems_router.router, prefix="/subsystems", tags=["subsystems"])
 app.include_router(events_router.router, prefix="/events", tags=["events"])
 app.include_router(jobs_router.router, prefix="/jobs", tags=["jobs"])
+app.include_router(health_router.router, prefix="/health", tags=["health"])
 app.include_router(autonomous_router.router, prefix="/autonomous", tags=["autonomous"])
 app.include_router(transcription_router.router, prefix="/transcription", tags=["transcription"])
 app.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
