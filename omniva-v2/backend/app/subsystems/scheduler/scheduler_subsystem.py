@@ -4,7 +4,6 @@ Cron-based scheduling subsystem backed by APScheduler.
 
 from typing import Any, Dict
 
-from app.core.job_queue import job_queue
 from app.core.registry import registry
 
 from .apscheduler_engine import APSchedulerEngine
@@ -24,7 +23,11 @@ class SchedulingSubsystem:
         return {"status": "scheduler subsystem initialized"}
 
     async def _pipeline_trigger(self, project_id: int) -> None:
-        job_queue.enqueue("start_pipeline", {"project_id": project_id})
+        manager = registry.get_subsystem("project_manager")
+        orchestrator = registry.get_subsystem("orchestrator")
+        config = manager.get(project_id)
+        creators = config.get("creators", [])
+        orchestrator.run_pipeline(project_id, creators)
 
     def configure_project(self, project_id: int, enabled: bool, cron: str) -> Dict[str, Any]:
         data = {"enabled": enabled, "cron": cron}

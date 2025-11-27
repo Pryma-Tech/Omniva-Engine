@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import load_config
 from app.core.event_bus import event_bus
 from app.core.plugins import load_plugins
-from app.core.registry import get_subsystem, initialize_all, list_subsystems, register_subsystem
+from app.core.registry import initialize_all, list_subsystems, register_subsystem
 from app.core.job_queue import get_job_queue
 from app.api.routes import analysis as analysis_router
 from app.api.routes import download as download_router
@@ -24,24 +24,21 @@ from app.api.routes import uploader as uploader_router
 from app.api.routes import worker as worker_router
 from app.api.routes import workers as workers_router
 from app.subsystems.templates.template_store import TemplateStore
+from app.subsystems.projects.project_manager import ProjectManager
+from app.subsystems.orchestrator.pipeline_orchestrator import PipelineOrchestrator
 
 config = load_config()
 register_subsystem("templates", TemplateStore())
+register_subsystem("project_manager", ProjectManager())
+register_subsystem("orchestrator", PipelineOrchestrator())
 load_plugins()
 initialize_all()
 
-analysis = get_subsystem("analysis")
-download = get_subsystem("download")
-transcription = get_subsystem("transcription")
-editing = get_subsystem("editing")
-uploader = get_subsystem("uploader")
-
-
 async def global_event_logger(data: dict):
-    print("EVENT:", data)
+    print(f"[EVENT] {data}")
 
 
-for evt in ["transcription_complete", "analysis_complete", "editing_complete", "upload_complete"]:
+for evt in ["pipeline_started", "transcription_complete", "analysis_complete", "editing_complete", "upload_complete"]:
     event_bus.subscribe(evt, global_event_logger)
 
 app = FastAPI(title=config.app_name, version="0.1.0")

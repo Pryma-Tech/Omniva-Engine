@@ -1,24 +1,34 @@
-"""Project routes (placeholder)."""
-
-from typing import List
+"""Project configuration API."""
 
 from fastapi import APIRouter
 
-from app.models.project import Project
+from app.core.registry import registry
 
 router = APIRouter()
 
-_FAKE_PROJECTS: List[Project] = [
-    Project(project_id=1, name="Demo Project", keywords=["ai", "clips"], recency_days=7, active=True)
-]
+
+def _pm():
+    return registry.get_subsystem("project_manager")
 
 
 @router.get("/")
 async def list_projects() -> list:
-    return [project.dict() for project in _FAKE_PROJECTS]
+    manager = _pm()
+    return manager.list_all()
 
 
-@router.post("/")
-async def create_project(project: Project) -> dict:
-    _FAKE_PROJECTS.append(project)
-    return project.dict()
+@router.get("/{project_id}")
+async def get_project(project_id: int) -> dict:
+    manager = _pm()
+    return manager.get(project_id)
+
+
+@router.post("/{project_id}")
+async def update_project(project_id: int, data: dict) -> dict:
+    manager = _pm()
+    project = manager.get(project_id)
+    if "creators" in data:
+        project["creators"] = data["creators"]
+    if "keywords" in data:
+        project["keywords"] = data["keywords"]
+    return manager.save(project_id, project)

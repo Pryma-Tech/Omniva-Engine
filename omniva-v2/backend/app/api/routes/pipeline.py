@@ -1,16 +1,17 @@
-"""Pipeline routes (placeholder)."""
+"""Pipeline orchestration API."""
 
 from fastapi import APIRouter
 
-from app.models.pipeline import PipelineRun, PipelineStep
+from app.core.registry import registry
 
 router = APIRouter()
 
 
-@router.get("/status/{project_id}")
-async def get_pipeline_status(project_id: int) -> dict:
-    steps = [
-        PipelineStep(name="scrape", status="completed"),
-        PipelineStep(name="download", status="pending"),
-    ]
-    return PipelineRun(project_id=project_id, steps=steps, status="running").dict()
+@router.post("/run/{project_id}")
+async def run_pipeline(project_id: int) -> dict:
+    project_manager = registry.get_subsystem("project_manager")
+    orchestrator = registry.get_subsystem("orchestrator")
+
+    config = project_manager.get(project_id)
+    creators = config.get("creators", [])
+    return orchestrator.run_pipeline(project_id, creators)

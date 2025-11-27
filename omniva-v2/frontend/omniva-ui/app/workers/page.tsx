@@ -6,6 +6,10 @@ export default function WorkersPage() {
   const [response, setResponse] = useState<any>(null);
 
   const send = async (path: string) => {
+    if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+      setResponse({ error: "Backend URL not configured" });
+      return;
+    }
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/workers/${path}`, {
       method: "POST",
     });

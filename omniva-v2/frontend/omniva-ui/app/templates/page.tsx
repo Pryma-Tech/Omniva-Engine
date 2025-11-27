@@ -16,11 +16,19 @@ export default function TemplatesPage() {
   });
 
   const load = async () => {
+    if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+      setTemplates([]);
+      return;
+    }
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/templates/`);
     setTemplates(await res.json());
   };
 
   const save = async () => {
+    if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+      setResp({ error: "Backend URL not configured" });
+      return;
+    }
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/templates/save`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

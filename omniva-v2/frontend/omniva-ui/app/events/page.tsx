@@ -6,6 +6,10 @@ export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([]);
 
   const load = async () => {
+    if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+      setEvents([]);
+      return;
+    }
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/events/log`);
     setEvents(await res.json());
   };
