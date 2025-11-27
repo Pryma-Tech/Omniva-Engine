@@ -76,6 +76,12 @@ class JobQueue:
                 url=job.payload.get("url"),
                 project_id=job.payload.get("project_id", 0),
             )
+        elif job.type == "start_pipeline":
+            project_id = job.payload.get("project_id", 0)
+            links = job.payload.get("links", [])
+            for link in links:
+                self.enqueue("download_url", {"url": link, "project_id": project_id})
+            job.result = {"status": "pipeline triggered", "project_id": project_id}
         elif job.type == "run_pipeline":
             job.result = {
                 "status": "pipeline executed (placeholder)",

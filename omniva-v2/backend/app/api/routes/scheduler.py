@@ -1,38 +1,23 @@
-"""Scheduler API routes (placeholder)."""
+"""Scheduler API endpoints."""
 
 from fastapi import APIRouter
 
 from app.core.registry import registry
-from app.models.scheduler import ScheduleRule
 
 router = APIRouter()
 
 
-@router.get("/status")
-async def scheduler_status() -> dict:
-    subsystem = registry.get_subsystem("scheduler")
-    return subsystem.status()
+@router.get("/project/{project_id}")
+async def get_project_schedule(project_id: int) -> dict:
+    scheduler = registry.get_subsystem("scheduler")
+    return scheduler.get_project_schedule(project_id)
 
 
-@router.get("/rules")
-async def list_rules() -> list:
-    subsystem = registry.get_subsystem("scheduler")
-    return subsystem.list_rules()
-
-
-@router.post("/add")
-async def add_rule(rule: ScheduleRule) -> dict:
-    subsystem = registry.get_subsystem("scheduler")
-    return subsystem.add_rule(rule)
-
-
-@router.post("/evaluate")
-async def evaluate_rules() -> dict:
-    subsystem = registry.get_subsystem("scheduler")
-    return subsystem.evaluate_schedules()
-
-
-@router.post("/trigger/{project_id}")
-async def trigger_pipeline(project_id: int) -> dict:
-    subsystem = registry.get_subsystem("scheduler")
-    return subsystem.trigger_pipeline(project_id)
+@router.post("/project/{project_id}")
+async def set_project_schedule(project_id: int, data: dict) -> dict:
+    scheduler = registry.get_subsystem("scheduler")
+    return scheduler.configure_project(
+        project_id,
+        data.get("enabled", False),
+        data.get("cron", "0 */6 * * *"),
+    )
