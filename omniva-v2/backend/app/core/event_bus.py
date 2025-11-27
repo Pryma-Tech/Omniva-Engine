@@ -1,62 +1,50 @@
-"""Upgraded EventBus (placeholder)."""
+"""
+Asynchronous EventBus with basic history tracking.
+"""
 
-import time
-from typing import Callable, Dict, List
+import asyncio
+from collections import defaultdict
+from datetime import datetime
+from typing import Any, Awaitable, Callable, DefaultDict, Dict, List
 
-
-class MessageEnvelope:
-    """Internal event message envelope."""
-
-    def __init__(self, event: str, payload: dict) -> None:
-        self.event = event
-        self.payload = payload
-        self.timestamp = time.time()
-
-    def to_dict(self) -> dict:
-        """Return a serializable representation of the message."""
-        return {"event": self.event, "payload": self.payload, "timestamp": self.timestamp}
+AsyncHandler = Callable[[Dict[str, Any]], Awaitable[None]]
 
 
 class EventBus:
-    """EventBus with history and wildcard support (placeholder)."""
+    """Async pub/sub event bus with in-memory log."""
 
     def __init__(self) -> None:
-        self.listeners: Dict[str, List[Callable]] = {}
-        self.wildcard_listeners: List[Callable] = []
-        self.history: List[MessageEnvelope] = []
+        self.subscribers: DefaultDict[str, List[AsyncHandler]] = defaultdict(list)
+        self.event_log: List[Dict[str, Any]] = []
+        self.lock = asyncio.Lock()
 
-    def subscribe(self, event: str, handler: Callable) -> None:
-        if event == "*":
-            self.wildcard_listeners.append(handler)
-        else:
-            self.listeners.setdefault(event, []).append(handler)
+    def subscribe(self, event_name: str, callback: AsyncHandler) -> None:
+        """Register an async handler for the event."""
+        self.subscribers[event_name].append(callback)
 
-    def publish(self, event: str, payload: dict) -> dict:
-        envelope = MessageEnvelope(event, payload)
-        self.history.append(envelope)
-        for handler in self.listeners.get(event, []):
-            handler(payload)
-        for handler in self.wildcard_listeners:
-            handler(payload)
-        return envelope.to_dict()
+    async def publish_async(self, event_name: str, data: Dict[str, Any]) -> None:
+        """Dispatch an event to subscribers asynchronously."""
+        async with self.lock:
+            self.event_log.append(
+                {
+                    "event": event_name,
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "data": data,
+                }
+            )
 
-    def emit_async(self, event: str, payload: dict) -> dict:
-        return self.publish(event, payload)
+        handlers = self.subscribers.get(event_name, [])
+        tasks = [asyncio.create_task(handler(data)) for handler in handlers]
+        if tasks:
+            await asyncio.gather(*tasks)
 
-    def get_history(self) -> List[dict]:
-        return [message.to_dict() for message in self.history]
+    def publish(self, event_name: str, data: Dict[str, Any]) -> None:
+        """Fire-and-forget wrapper for publish_async."""
+        asyncio.create_task(self.publish_async(event_name, data))
 
-    def status(self) -> dict:
-        return {
-            "listeners": {name: len(handlers) for name, handlers in self.listeners.items()},
-            "wildcard_listeners": len(self.wildcard_listeners),
-            "history_count": len(self.history),
-            "status": "ok (placeholder)",
-        }
+    def get_log(self) -> List[Dict[str, Any]]:
+        """Return a snapshot of the event log."""
+        return list(self.event_log)
 
 
 event_bus = EventBus()
-
-
-def get_event_bus() -> EventBus:
-    return event_bus

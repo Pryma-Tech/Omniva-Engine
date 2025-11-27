@@ -4,8 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import load_config
+from app.core.event_bus import event_bus
 from app.core.plugins import load_plugins
-from app.core.registry import initialize_all, list_subsystems, register_subsystem
+from app.core.registry import get_subsystem, initialize_all, list_subsystems, register_subsystem
 from app.core.job_queue import get_job_queue
 from app.api.routes import analysis as analysis_router
 from app.api.routes import download as download_router
@@ -21,12 +22,27 @@ from app.api.routes import templates as templates_router
 from app.api.routes import transcription as transcription_router
 from app.api.routes import uploader as uploader_router
 from app.api.routes import worker as worker_router
+from app.api.routes import workers as workers_router
 from app.subsystems.templates.template_store import TemplateStore
 
 config = load_config()
 register_subsystem("templates", TemplateStore())
 load_plugins()
 initialize_all()
+
+analysis = get_subsystem("analysis")
+download = get_subsystem("download")
+transcription = get_subsystem("transcription")
+editing = get_subsystem("editing")
+uploader = get_subsystem("uploader")
+
+
+async def global_event_logger(data: dict):
+    print("EVENT:", data)
+
+
+for evt in ["transcription_complete", "analysis_complete", "editing_complete", "upload_complete"]:
+    event_bus.subscribe(evt, global_event_logger)
 
 app = FastAPI(title=config.app_name, version="0.1.0")
 app.add_middleware(
@@ -50,6 +66,7 @@ app.include_router(editing_router.router, prefix="/editing", tags=["editing"])
 app.include_router(scheduler_router.router, prefix="/scheduler", tags=["scheduler"])
 app.include_router(templates_router.router, prefix="/templates", tags=["templates"])
 app.include_router(worker_router.router, prefix="/worker", tags=["worker"])
+app.include_router(workers_router.router, prefix="/workers", tags=["workers"])
 
 
 @app.get("/info")

@@ -10,7 +10,8 @@ const links = [
   { href: "/scheduler", label: "Scheduler" },
   { href: "/uploader", label: "Uploader" },
   { href: "/events", label: "Events" },
-  { href: "/worker", label: "Worker" }
+  { href: "/worker", label: "Worker" },
+  { href: "/workers", label: "Workers" }
 ];
 
 export default function Nav() {
