@@ -51,3 +51,9 @@ async def apply_schedule(project_id: int) -> dict:
 async def get_trending(project_id: int) -> dict:
     intel = _engine()
     return intel.get_trending_keywords(project_id)
+
+
+@router.post("/semantic-rank/{project_id}")
+async def semantic_rank(project_id: int, clips: list) -> list:
+    intel = _engine()
+    return intel.semantic_rank(project_id, clips)

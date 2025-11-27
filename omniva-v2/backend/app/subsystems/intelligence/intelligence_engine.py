@@ -13,6 +13,7 @@ class IntelligenceEngine:
 
     def __init__(self) -> None:
         from .predictors.audio_trends import AudioTrendMatcher
+        from .predictors.semantic_ranker import SemanticRanker
         from .predictors.keyword_ranker import KeywordRanker
         from .predictors.posting_time import PostingTimePredictor
         from .modes.balanced import BalancedMode
@@ -22,6 +23,7 @@ class IntelligenceEngine:
         self.posting_time = PostingTimePredictor()
         self.keyword_ranker = KeywordRanker()
         self.audio_trends = AudioTrendMatcher()
+        self.semantic_ranker = SemanticRanker()
 
         self.modes = {
             "viral": ViralFirstMode(self),
@@ -58,6 +60,9 @@ class IntelligenceEngine:
 
     def get_trending_keywords(self, project_id: int) -> dict:
         return self.keyword_ranker.store.get_trends(project_id)
+
+    def semantic_rank(self, project_id: int, clips: list) -> list:
+        return self.semantic_ranker.rank(project_id, clips)
 
     def status(self) -> dict:
         return {"mode": self.current_mode, "available_modes": list(self.modes.keys())}
