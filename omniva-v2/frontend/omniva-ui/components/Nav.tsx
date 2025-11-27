@@ -14,6 +14,8 @@ const links = [
   { href: "/intelligence", label: "Intelligence" },
   { href: "/intelligence/trending", label: "Trending" },
   { href: "/intelligence/semantic", label: "Semantic" },
+  { href: "/intelligence/audio", label: "Audio" },
+  { href: "/intelligence/prioritizer", label: "Prioritizer" },
   { href: "/health", label: "Health" },
   { href: "/events", label: "Events" },
   { href: "/worker", label: "Worker" },

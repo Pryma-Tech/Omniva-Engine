@@ -69,3 +69,26 @@ async def get_audio_trends(project_id: int) -> dict:
 async def audio_match(project_id: int, clip_meta: dict) -> dict:
     intel = _engine()
     return intel.audio_trends.match(project_id, clip_meta)
+
+
+@router.post("/prioritize/{project_id}")
+async def prioritize(project_id: int, payload: dict) -> list:
+    intel = _engine()
+    return intel.prioritize_clips(
+        project_id,
+        payload.get("semantic", []),
+        payload.get("keyword", []),
+        payload.get("audio", []),
+    )
+
+
+@router.get("/prioritizer/weights")
+async def get_prioritizer_weights() -> dict:
+    intel = _engine()
+    return intel.get_prioritizer_weights()
+
+
+@router.post("/prioritizer/weights")
+async def set_prioritizer_weights(new: dict) -> dict:
+    intel = _engine()
+    return intel.set_prioritizer_weights(new)

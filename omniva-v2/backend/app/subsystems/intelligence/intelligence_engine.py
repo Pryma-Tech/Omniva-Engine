@@ -19,11 +19,13 @@ class IntelligenceEngine:
         from .modes.balanced import BalancedMode
         from .modes.evergreen import EvergreenMode
         from .modes.viral_first import ViralFirstMode
+        from .prioritizer.prioritizer_engine import ClipPrioritizer
 
         self.posting_time = PostingTimePredictor()
         self.keyword_ranker = KeywordRanker()
         self.audio_trends = AudioTrendMatcher()
         self.semantic_ranker = SemanticRanker()
+        self.prioritizer = ClipPrioritizer()
 
         self.modes = {
             "viral": ViralFirstMode(self),
@@ -66,6 +68,15 @@ class IntelligenceEngine:
 
     def get_audio_trends(self, project_id: int) -> dict:
         return self.audio_trends.store.get_trending(project_id)
+
+    def prioritize_clips(self, project_id: int, semantic: list, keyword: list, audio: list):
+        return self.prioritizer.fuse(project_id, semantic, keyword, audio)
+
+    def get_prioritizer_weights(self):
+        return self.prioritizer.get_weights()
+
+    def set_prioritizer_weights(self, weights: dict):
+        return self.prioritizer.set_weights(weights)
 
     def status(self) -> dict:
         return {"mode": self.current_mode, "available_modes": list(self.modes.keys())}
