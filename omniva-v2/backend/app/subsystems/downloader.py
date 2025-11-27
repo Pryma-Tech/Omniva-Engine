@@ -6,6 +6,7 @@ import os
 from typing import Any, Dict
 
 from app.core.event_bus import event_bus
+from app.core.job_queue import job_queue
 from app.core.registry import registry
 from app.core.url_detector import URLDetector
 from app.subsystems.downloaders.instagram_extractor import InstagramExtractor
@@ -41,6 +42,7 @@ class DownloadSubsystem:
             filepath = extractor.download(url, output_dir)
             result = {"url": url, "platform": platform, "filepath": filepath}
             event_bus.publish("download_complete", result)
+            job_queue.enqueue("transcribe", {"filepath": filepath, "project_id": project_id})
             return result
         except Exception as exc:  # pylint: disable=broad-except
             return {"error": str(exc), "url": url, "platform": platform}

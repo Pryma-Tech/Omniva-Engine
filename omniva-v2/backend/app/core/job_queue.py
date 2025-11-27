@@ -60,6 +60,12 @@ class JobQueue:
             uploader = get_subsystem("uploader")
             renders = job.payload.get("renders", [])
             job.result = uploader.upload(renders)
+        elif job.type == "transcribe":
+            transcription = get_subsystem("transcription")
+            job.result = transcription.transcribe_file(
+                filepath=job.payload.get("filepath"),
+                project_id=job.payload.get("project_id", 0),
+            )
         elif job.type == "download_url":
             downloader = get_subsystem("download")
             job.result = downloader.download_url(
