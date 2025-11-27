@@ -9,6 +9,7 @@ from app.core.plugins import load_plugins
 from app.core.registry import initialize_all, list_subsystems, register_subsystem
 from app.core.job_queue import get_job_queue
 from app.api.routes import analysis as analysis_router
+from app.api.routes import autonomous as autonomous_router
 from app.api.routes import download as download_router
 from app.api.routes import editing as editing_router
 from app.api.routes import events as events_router
@@ -26,11 +27,13 @@ from app.api.routes import workers as workers_router
 from app.subsystems.templates.template_store import TemplateStore
 from app.subsystems.projects.project_manager import ProjectManager
 from app.subsystems.orchestrator.pipeline_orchestrator import PipelineOrchestrator
+from app.subsystems.autonomous.autonomous_engine import AutonomousEngine
 
 config = load_config()
 register_subsystem("templates", TemplateStore())
 register_subsystem("project_manager", ProjectManager())
 register_subsystem("orchestrator", PipelineOrchestrator())
+register_subsystem("autonomous", AutonomousEngine())
 load_plugins()
 initialize_all()
 
@@ -38,7 +41,14 @@ async def global_event_logger(data: dict):
     print(f"[EVENT] {data}")
 
 
-for evt in ["pipeline_started", "transcription_complete", "analysis_complete", "editing_complete", "upload_complete"]:
+for evt in [
+    "pipeline_started",
+    "transcription_complete",
+    "analysis_complete",
+    "editing_complete",
+    "upload_complete",
+    "autonomous_pipeline_triggered",
+]:
     event_bus.subscribe(evt, global_event_logger)
 
 app = FastAPI(title=config.app_name, version="0.1.0")
@@ -55,6 +65,7 @@ app.include_router(pipeline_router.router, prefix="/pipeline", tags=["pipeline"]
 app.include_router(subsystems_router.router, prefix="/subsystems", tags=["subsystems"])
 app.include_router(events_router.router, prefix="/events", tags=["events"])
 app.include_router(jobs_router.router, prefix="/jobs", tags=["jobs"])
+app.include_router(autonomous_router.router, prefix="/autonomous", tags=["autonomous"])
 app.include_router(transcription_router.router, prefix="/transcription", tags=["transcription"])
 app.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
 app.include_router(download_router.router, prefix="/download", tags=["download"])

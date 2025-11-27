@@ -9,8 +9,11 @@ from app.core.job_queue import job_queue
 # Import subsystem modules for registration side effects.
 from app.subsystems import (  # noqa: F401
     analysis,
+    autonomous,
     downloader,
     editing,
+    orchestrator,
+    projects,
     scheduler,
     scraper,
     templates,
@@ -27,14 +30,3 @@ def load_plugins() -> None:
     logger.info("Loading subsystem plugins (placeholder)")
     register_subsystem("event_bus", event_bus)
     register_subsystem("job_queue", job_queue)
-from app.subsystems import (  # noqa: F401
-    analysis,
-    downloader,
-    editing,
-    scheduler,
-    scraper,
-    templates,
-    transcription,
-    uploader,
-    worker,
-)
