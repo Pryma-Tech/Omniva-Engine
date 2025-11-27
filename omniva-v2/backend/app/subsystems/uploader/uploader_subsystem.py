@@ -3,6 +3,7 @@ Uploader subsystem that handles OAuth + YouTube uploads.
 """
 
 import os
+from datetime import datetime
 from typing import Any, Dict, List
 
 from app.core.event_bus import event_bus
@@ -43,6 +44,11 @@ class UploaderSubsystem:
 
             response = uploader.upload_video(clip, title, description, tags)
             uploaded.append({"clip": clip, "youtube_id": response.get("id")})
+            try:
+                intelligence = registry.get_subsystem("intelligence")
+                intelligence.posting_time.record_post(project_id, datetime.utcnow())
+            except Exception:  # pylint: disable=broad-except
+                pass
 
         result = {"project_id": project_id, "uploaded": uploaded}
         event_bus.publish("upload_complete", result)
