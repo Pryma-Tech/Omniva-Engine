@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import load_config
 from app.core.plugins import load_plugins
-from app.core.registry import initialize_all, list_subsystems
+from app.core.registry import initialize_all, list_subsystems, register_subsystem
 from app.core.job_queue import get_job_queue
 from app.api.routes import analysis as analysis_router
 from app.api.routes import download as download_router
@@ -21,8 +21,10 @@ from app.api.routes import templates as templates_router
 from app.api.routes import transcription as transcription_router
 from app.api.routes import uploader as uploader_router
 from app.api.routes import worker as worker_router
+from app.subsystems.templates.template_store import TemplateStore
 
 config = load_config()
+register_subsystem("templates", TemplateStore())
 load_plugins()
 initialize_all()
 

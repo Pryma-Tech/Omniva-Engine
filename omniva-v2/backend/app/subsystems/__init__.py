@@ -1,6 +1,6 @@
 """Subsystem package initialization."""
 
-from . import analysis, downloader, editing, scheduler, scraper, templates, transcription, uploader, worker  # noqa: F401
+from . import analysis, downloader, editing, scheduler, scraper, transcription, uploader, worker  # noqa: F401
 
 __all__ = [
     "analysis",
@@ -8,7 +8,6 @@ __all__ = [
     "editing",
     "scheduler",
     "scraper",
-    "templates",
     "transcription",
     "uploader",
     "worker",

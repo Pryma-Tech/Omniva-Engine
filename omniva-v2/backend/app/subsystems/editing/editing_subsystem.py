@@ -10,10 +10,16 @@ from app.core.event_bus import event_bus
 from app.core.job_queue import job_queue
 from app.core.registry import registry
 from app.models.analysis import ClipCandidate
+from app.models.template import StyleTemplate
+from app.subsystems.templates.overlay_engine import (
+    generate_text_overlay,
+    generate_watermark_overlay,
+)
+from app.subsystems.templates.template_engine import TemplateEngine
+from app.subsystems.templates.template_store import TemplateStore
 
 from .ffmpeg_util import convert_to_vertical, cut_clip
 from .subtitles import burn_subtitles
-from .templates import ClipTemplate
 
 
 class EditingSubsystem:
@@ -22,7 +28,10 @@ class EditingSubsystem:
     name = "editing"
 
     def __init__(self) -> None:
-        self.template = ClipTemplate("default")
+        self.template_store = TemplateStore()
+        if self.template_store.load_template("default") is None:
+            self.template_store.save_template(StyleTemplate(name="default"))
+        self.template_engine = TemplateEngine()
 
     def initialize(self) -> Dict[str, str]:
         return {"status": "editing subsystem initialized"}
@@ -57,6 +66,8 @@ class EditingSubsystem:
         rendered_paths: List[str] = []
         source_video = raw_files[0]
 
+        template = self.template_store.load_template("default") or StyleTemplate(name="default")
+
         for index, candidate in enumerate(selected_candidates):
             base_name = f"clip_{index}"
             cut_path = os.path.join(output_dir, f"{base_name}_cut.mp4")
@@ -65,9 +76,16 @@ class EditingSubsystem:
 
             cut_clip(source_video, cut_path, candidate.start, candidate.end)
             convert_to_vertical(cut_path, vertical_path)
-            templated_path = self.template.apply(vertical_path, vertical_path)
-            burn_subtitles(templated_path, final_path, candidate.text)
-            rendered_paths.append(final_path)
+            burn_subtitles(vertical_path, final_path, candidate.text)
+
+            text_overlay = generate_text_overlay(candidate.text, template)
+            watermark_overlay = generate_watermark_overlay(template)
+            styled_path = final_path.replace("_final", "_styled")
+            self.template_engine.apply_template(final_path, styled_path, text_overlay, watermark_overlay)
+            if text_overlay and os.path.exists(text_overlay):
+                os.remove(text_overlay)
+
+            rendered_paths.append(styled_path)
 
         result = {
             "project_id": project_id,

@@ -1,12 +1,17 @@
-"""Style template models (placeholder)."""
+"""Style template models."""
+
+from typing import Optional
 
 from pydantic import BaseModel
 
 
 class StyleTemplate(BaseModel):
+    """Represents typography and overlay settings for clips."""
+
     name: str
-    aspect_ratio: str = "9:16"
-    color_palette: str = "default"
-    subtitle_style: str = "default"
-    transition_style: str = "cut"
-    audio_style: str = "none"
+    font: str = "Arial"
+    font_size: int = 48
+    text_color: str = "white"
+    outline_color: str = "black"
+    outline_width: int = 2
+    watermark_path: Optional[str] = None

@@ -1,4 +1,4 @@
-"""Template subsystem API (placeholder)."""
+"""Template management API."""
 
 from fastapi import APIRouter
 
@@ -8,25 +8,23 @@ from app.models.template import StyleTemplate
 router = APIRouter()
 
 
-@router.get("/status")
-async def template_status() -> dict:
-    subsystem = registry.get_subsystem("templates")
-    return subsystem.status()
+def _get_store():
+    store = registry.get_subsystem("templates")
+    if store is None:
+        from app.subsystems.templates.template_store import TemplateStore
+
+        store = TemplateStore()
+    return store
 
 
-@router.get("/list")
+@router.get("/")
 async def list_templates() -> list:
-    subsystem = registry.get_subsystem("templates")
-    return subsystem.list_templates()
+    store = _get_store()
+    return store.list_templates()
 
 
-@router.post("/add")
-async def add_template(template: StyleTemplate) -> dict:
-    subsystem = registry.get_subsystem("templates")
-    return subsystem.add_template(template)
-
-
-@router.get("/get/{name}")
-async def get_template(name: str) -> dict:
-    subsystem = registry.get_subsystem("templates")
-    return subsystem.get_template(name)
+@router.post("/save")
+async def save_template(data: dict) -> dict:
+    store = _get_store()
+    template = StyleTemplate(**data)
+    return store.save_template(template)
