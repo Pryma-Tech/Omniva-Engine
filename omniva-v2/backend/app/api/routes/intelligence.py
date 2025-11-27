@@ -45,3 +45,9 @@ async def apply_schedule(project_id: int) -> dict:
         "applied_cron": cron,
         "scheduler_config": config,
     }
+
+
+@router.get("/trending/{project_id}")
+async def get_trending(project_id: int) -> dict:
+    intel = _engine()
+    return intel.get_trending_keywords(project_id)

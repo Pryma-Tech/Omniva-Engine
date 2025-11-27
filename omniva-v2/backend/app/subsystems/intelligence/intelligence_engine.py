@@ -56,5 +56,8 @@ class IntelligenceEngine:
     def get_posting_stats(self, project_id: int) -> dict:
         return self.posting_time.store.load(project_id)
 
+    def get_trending_keywords(self, project_id: int) -> dict:
+        return self.keyword_ranker.store.get_trends(project_id)
+
     def status(self) -> dict:
         return {"mode": self.current_mode, "available_modes": list(self.modes.keys())}

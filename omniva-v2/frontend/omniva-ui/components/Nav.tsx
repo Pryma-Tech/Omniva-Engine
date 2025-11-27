@@ -12,6 +12,7 @@ const links = [
   { href: "/uploader", label: "Uploader" },
   { href: "/autonomous", label: "Autonomous" },
   { href: "/intelligence", label: "Intelligence" },
+  { href: "/intelligence/trending", label: "Trending" },
   { href: "/health", label: "Health" },
   { href: "/events", label: "Events" },
   { href: "/worker", label: "Worker" },
