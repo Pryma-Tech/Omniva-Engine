@@ -3,8 +3,6 @@
 from typing import Any, Dict, List
 
 from app.core.registry import registry
-from app.core.event_bus import event_bus
-from app.core.job_queue import job_queue
 
 
 class EditingSubsystem:
@@ -13,11 +11,7 @@ class EditingSubsystem:
     name = "editing"
 
     def initialize(self) -> Dict[str, str]:
-        event_bus.subscribe("analysis_complete", self.on_analysis_ready)
         return {"status": "editing subsystem initialized (placeholder)"}
-
-    def on_analysis_ready(self, payload: dict) -> None:
-        job_queue.enqueue("render_clips", payload)
 
     def render_candidates(self, candidates: list) -> Dict[str, Any]:
         fake_outputs: List[Dict[str, Any]] = []

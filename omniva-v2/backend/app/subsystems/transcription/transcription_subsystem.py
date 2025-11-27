@@ -7,6 +7,7 @@ import os
 from typing import Any, Dict
 
 from app.core.event_bus import event_bus
+from app.core.job_queue import job_queue
 from app.core.registry import registry
 
 from .normalizer import normalize_segments
@@ -39,14 +40,22 @@ class TranscriptionSubsystem:
             with open(output_path, "w", encoding="utf-8") as file_handle:
                 json.dump(normalized, file_handle, indent=2)
 
-            result = {
-                "filepath": filepath,
+        result = {
+            "filepath": filepath,
+            "project_id": project_id,
+            "transcript": normalized,
+            "output_path": output_path,
+        }
+        event_bus.publish("transcription_complete", result)
+        job_queue.enqueue(
+            "analyze",
+            {
+                "filepath": output_path,
                 "project_id": project_id,
-                "transcript": normalized,
-                "output_path": output_path,
-            }
-            event_bus.publish("transcription_complete", result)
-            return result
+                "keywords": [],
+            },
+        )
+        return result
         except Exception as exc:  # pylint: disable=broad-except
             return {"error": str(exc), "filepath": filepath, "project_id": project_id}
 

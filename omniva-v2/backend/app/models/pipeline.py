@@ -1,14 +1,8 @@
 """Pipeline model (placeholder)."""
 
+from typing import Dict, List
+
 from pydantic import BaseModel
-from typing import List, Dict
-
-
-class ClipCandidate(BaseModel):
-    start: float
-    end: float
-    text: str
-    score: float
 
 
 class PipelineStep(BaseModel):

@@ -1,7 +1,8 @@
-"""Analysis subsystem API (placeholder)."""
+"""Analysis subsystem API."""
 
 from fastapi import APIRouter
 
+from app.core.job_queue import job_queue
 from app.core.registry import registry
 
 router = APIRouter()
@@ -14,10 +15,12 @@ async def analysis_status() -> dict:
 
 
 @router.post("/run")
-async def run_analysis(data: dict) -> list:
-    subsystem = registry.get_subsystem("analysis")
-    candidates = subsystem.analyze_transcript(
-        project_id=data.get("project_id"),
-        transcript=data.get("transcript"),
+async def run_analysis(data: dict) -> dict:
+    filepath = data.get("filepath", "")
+    project_id = data.get("project_id", 0)
+    keywords = data.get("keywords", [])
+    job_queue.enqueue(
+        "analyze",
+        {"filepath": filepath, "project_id": project_id, "keywords": keywords},
     )
-    return [c.dict() for c in candidates]
+    return {"queued": True, "filepath": filepath, "project_id": project_id}
