@@ -43,6 +43,16 @@ from app.api.routes import workers as workers_router
 from app.api.routes import sanctum as sanctum_router
 from app.api.routes import forge as forge_router
 from app.api.routes import etherlink as etherlink_router
+from app.api.routes import halo as halo_router
+from app.api.routes import oracle as oracle_router
+from app.api.routes import astral as astral_router
+from app.api.routes import infinity as infinity_router
+from app.api.routes import paradox as paradox_router
+from app.api.routes import eclipse as eclipse_router
+from app.api.routes import stardust as stardust_router
+from app.api.routes import lattice as lattice_router
+from app.api.routes import horizon as horizon_router
+from app.api.routes import pantheon as pantheon_router
 from app.api.routes import safety as safety_router
 from app.subsystems.templates.template_store import TemplateStore
 from app.subsystems.projects.project_manager import ProjectManager
@@ -136,6 +146,16 @@ app.include_router(workers_router.router, prefix="/workers", tags=["workers"])
 app.include_router(sanctum_router.router)
 app.include_router(forge_router.router)
 app.include_router(etherlink_router.router)
+app.include_router(halo_router.router)
+app.include_router(oracle_router.router)
+app.include_router(astral_router.router)
+app.include_router(infinity_router.router)
+app.include_router(paradox_router.router)
+app.include_router(eclipse_router.router)
+app.include_router(stardust_router.router)
+app.include_router(lattice_router.router)
+app.include_router(horizon_router.router)
+app.include_router(pantheon_router.router)
 app.include_router(intelligence_router.router, prefix="/intelligence", tags=["intelligence"])
 app.include_router(registry.forge.plugin_router)
 app.include_router(registry.nexus.router)

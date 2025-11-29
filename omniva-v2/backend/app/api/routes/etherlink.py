@@ -40,7 +40,7 @@ async def heartbeat(request: HeartbeatRequest):
 
 @router.post("/event")
 async def receive_event(request: EventRequest):
-    if request.token != registry.sync_protocol.auth_token:
+    if not registry.halo.validate(request.token, "etherlink"):
         return {"ok": False, "error": "unauthorized"}
     registry.eventbus.publish(request.topic, request.payload)
     return {"ok": True}
@@ -48,7 +48,7 @@ async def receive_event(request: EventRequest):
 
 @router.get("/state")
 async def get_state(token: str):
-    if token != registry.sync_protocol.auth_token:
+    if not registry.halo.validate(token, "etherlink"):
         return {"ok": False, "error": "unauthorized"}
     return registry.etherlink.local_state_snapshot()
 

@@ -37,6 +37,7 @@ class EventBus:
         self._symbolic_observer(event_name, data)
         self._archive_observer(event_name, data)
         self._plugin_observer(event_name, data)
+        self._stardust_observer(event_name, data)
 
         handlers = self.subscribers.get(event_name, [])
         tasks = [asyncio.create_task(handler(data)) for handler in handlers]
@@ -93,6 +94,19 @@ class EventBus:
                     asyncio.create_task(result)
             except Exception:
                 continue
+
+    def _stardust_observer(self, event_name: str, data: Dict[str, Any]) -> None:
+        try:
+            from app.core.registry import registry
+        except Exception:
+            return
+        stardust = getattr(registry, "stardust", None) or registry.get_subsystem("stardust")
+        if not stardust:
+            return
+        try:
+            stardust.attach_to_event(event_name, data)
+        except Exception:
+            pass
 
 
 event_bus = EventBus()

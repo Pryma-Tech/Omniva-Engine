@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
 
@@ -18,9 +18,15 @@ class NexusGateway:
         self.registry = registry
         self.composer = composer
         self.router = APIRouter(prefix="/nexus", tags=["nexus"])
-        self.router.get("/snapshot")(self.full_snapshot)
-        self.router.get("/project/{project_id}")(self.project_brief)
-        self.router.get("/health")(self.health_check)
+        self.router.get("/snapshot", dependencies=[Depends(self._guard("nexus"))])(self.full_snapshot)
+        self.router.get("/project/{project_id}", dependencies=[Depends(self._guard("nexus"))])(self.project_brief)
+        self.router.get("/health", dependencies=[Depends(self._guard("nexus"))])(self.health_check)
+
+    def _guard(self, scope: str):
+        async def guard_dependency(request: Request):
+            await self.registry.guard.require(request, scope)
+
+        return guard_dependency
 
     def _projects(self) -> Optional[Any]:
         return (

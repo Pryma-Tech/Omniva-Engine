@@ -55,3 +55,11 @@ class EmotionModel:
         state.setdefault("history", []).append(snapshot)
         self.state[project_id] = state
         return state
+
+    def get_history(self, project_id: int, field: str) -> list[float]:
+        """
+        Retrieve historical values for a specific field.
+        """
+        state = self.get(project_id)
+        history = state.get("history", [])
+        return [entry.get(field, 0.0) for entry in history]

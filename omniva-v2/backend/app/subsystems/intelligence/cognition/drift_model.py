@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 def _default_state() -> Dict[str, Any]:
@@ -44,3 +44,9 @@ class FocusDrift:
         )
         self.state[project_id] = state
         return state
+
+    def get_history(self, project_id: int) -> List[float]:
+        state = self.state.get(project_id)
+        if not state:
+            return []
+        return [entry.get("drift", 0.0) for entry in state.get("history", [])]

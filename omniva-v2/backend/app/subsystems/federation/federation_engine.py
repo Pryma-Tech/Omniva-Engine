@@ -17,6 +17,7 @@ class FederatedIntelligenceEngine:
         self.emotional_norms: Dict[int, float] = {}
         self.drift_profiles: Dict[int, float] = {}
         self.shared_heuristics: Dict = {}
+        self.trend_history: Dict[int, List[float]] = {}
 
     def _compute_centroid(self, vectors: List[List[float]]) -> List[float]:
         if not vectors:
@@ -35,7 +36,12 @@ class FederatedIntelligenceEngine:
         projects = self.registry.get_subsystem("project_manager") or self.registry.get_subsystem("projects")
         clips = projects.get_project_clips(project_id) if projects and hasattr(projects, "get_project_clips") else []
         if clips:
-            self.trend_scores[project_id] = mean([clip.get("trending", 0.0) for clip in clips])
+            trend_score = mean([clip.get("trending", 0.0) for clip in clips])
+            self.trend_scores[project_id] = trend_score
+            history = self.trend_history.setdefault(project_id, [])
+            history.append(trend_score)
+            if len(history) > 50:
+                self.trend_history[project_id] = history[-50:]
         emotion = intel.emotion_model.get(project_id)
         self.emotional_norms[project_id] = mean([
             emotion.get("excitement", 0.5),
@@ -60,3 +66,6 @@ class FederatedIntelligenceEngine:
 
     def share_to_project(self, project_id: int) -> Dict:
         return self.shared_heuristics or {}
+
+    def get_trend_history(self, project_id: int) -> List[float]:
+        return list(self.trend_history.get(project_id, []))

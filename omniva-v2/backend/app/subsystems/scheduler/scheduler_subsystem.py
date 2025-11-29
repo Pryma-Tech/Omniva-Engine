@@ -91,5 +91,37 @@ class SchedulingSubsystem:
     def status(self) -> Dict[str, str]:
         return {"name": self.name, "status": "ok"}
 
+    def queue_length(self) -> int:
+        """
+        Estimate pending jobs from schedule store (simple heuristic).
+        """
+        total = 0
+        for project_id in self.store.schedules.keys():
+            queue_path = os.path.join("storage", "projects", str(project_id), "queue", "clips.json")
+            if os.path.exists(queue_path):
+                try:
+                    with open(queue_path, "r", encoding="utf-8") as queue_file:
+                        entries = json.load(queue_file)
+                        total += len(entries)
+                except Exception:
+                    continue
+        return total
+
+    def reset_queue(self) -> Dict[str, int]:
+        """
+        Clears queued clip requests for all projects (failsafe support).
+        """
+        cleared = 0
+        for project_id in list(self.store.schedules.keys()):
+            queue_dir = os.path.join("storage", "projects", str(project_id), "queue")
+            queue_path = os.path.join(queue_dir, "clips.json")
+            if os.path.exists(queue_path):
+                try:
+                    os.remove(queue_path)
+                    cleared += 1
+                except Exception:
+                    continue
+        return {"cleared_projects": cleared}
+
 
 registry.register_subsystem("scheduler", SchedulingSubsystem())

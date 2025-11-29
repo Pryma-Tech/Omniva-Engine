@@ -63,6 +63,10 @@ class ForgeEngine:
         plugin = self.plugins[name]
         module = cast(ModuleType, plugin["module"])
 
+        trust_level = self.registry.halo.get_plugin_trust().get(name, "sandboxed")
+        if trust_level == "blocked":
+            return {"ok": False, "error": "plugin_blocked_by_halo"}
+
         init_fn = getattr(module, "init", None)
         if callable(init_fn):
             init_fn(self.registry)

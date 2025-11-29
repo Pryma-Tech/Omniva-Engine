@@ -25,6 +25,16 @@ from app.subsystems.etherlink import EtherlinkEngine, NodeRegistry, SyncProtocol
 from app.nexus import Composer, NexusGateway
 from app.sanctum import SanctumCommands, SanctumEngine
 from app.forge import ForgeEngine, PluginLoader
+from app.halo import HaloEngine, HaloGuard, TokenAuthority
+from app.subsystems.oracle import ForecastingEngine, OracleEngine, ResonanceEngine
+from app.subsystems.astral import AstralEngine, ScenarioEngine, TimelineSimulator
+from app.subsystems.infinity import InfinityEngine, InfinityScaler, TemporalLoadBalancer
+from app.subsystems.paradox import ParadoxEngine, ParadoxRules, ReconciliationEngine
+from app.subsystems.eclipse import CrisisDetector, EclipseEngine, RecoveryEngine
+from app.subsystems.stardust import AttributionGraph, StardustEngine
+from app.subsystems.lattice import LatticeFabric, LatticeLinker, LatticeEngine
+from app.subsystems.horizon import HorizonGoalModel, HorizonAlignmentEngine, HorizonEngine
+from app.subsystems.pantheon import Harmonizer, Guardian, Strategist, Explorer, PantheonCouncil, PantheonEngine
 
 logger = logging.getLogger("omniva_v2")
 
@@ -62,6 +72,9 @@ class SubsystemRegistry:
         self.archive = ArchiveEngine(self, self.epoch_detector)
         self.metrics = MetricsCalculator()
         self.observatory = ObservatoryEngine(self, self.metrics)
+        self.token_authority = TokenAuthority()
+        self.halo = HaloEngine(self, self.token_authority)
+        self.guard = HaloGuard(self.halo)
         self.composer = Composer(self)
         self.nexus = NexusGateway(self, self.composer)
         self.sanctum_commands = SanctumCommands(self)
@@ -69,9 +82,35 @@ class SubsystemRegistry:
         self.forge_loader = PluginLoader()
         self.forge = ForgeEngine(self)
         self.node_registry = NodeRegistry()
-        etherlink_token = os.getenv("ETHERLINK_TOKEN", "CHANGE_ME")
+        etherlink_token = self.halo.get_core_tokens()["etherlink"]
         self.sync_protocol = SyncProtocol(self, auth_token=etherlink_token)
         self.etherlink = EtherlinkEngine(self, self.node_registry, self.sync_protocol)
+        self.oracle_forecasting = ForecastingEngine()
+        self.oracle_resonance = ResonanceEngine()
+        self.oracle = OracleEngine(self, self.oracle_forecasting, self.oracle_resonance)
+        self.astral_sim = TimelineSimulator(self, self.oracle)
+        self.astral_scenarios = ScenarioEngine(self.astral_sim)
+        self.astral = AstralEngine(self, self.astral_sim, self.astral_scenarios)
+        self.infinity_balancer = TemporalLoadBalancer(self)
+        self.infinity_scaler = InfinityScaler(self)
+        self.infinity = InfinityEngine(self, self.infinity_balancer, self.infinity_scaler)
+        self.paradox_rules = ParadoxRules()
+        self.paradox_recon = ReconciliationEngine()
+        self.paradox = ParadoxEngine(self, self.paradox_rules, self.paradox_recon)
+        self.eclipse_detector = CrisisDetector(self)
+        self.eclipse_recovery = RecoveryEngine(self)
+        self.eclipse = EclipseEngine(self, self.eclipse_detector, self.eclipse_recovery)
+        self.stardust_graph = AttributionGraph()
+        self.stardust = StardustEngine(self, self.stardust_graph)
+        self.lattice_fabric = LatticeFabric()
+        self.lattice_linker = LatticeLinker(self, self.lattice_fabric)
+        self.lattice = LatticeEngine(self, self.lattice_fabric, self.lattice_linker)
+        self.horizon_goals = HorizonGoalModel()
+        self.horizon_alignment = HorizonAlignmentEngine(self, self.horizon_goals)
+        self.horizon = HorizonEngine(self, self.horizon_goals, self.horizon_alignment)
+        self.archetypes = [Strategist(), Explorer(), Guardian(), Harmonizer()]
+        self.pantheon_council = PantheonCouncil(self.archetypes)
+        self.pantheon = PantheonEngine(self, self.pantheon_council)
         self.register_subsystem("soul", self.soul)
         self.register_subsystem("archive", self.archive)
         self.register_subsystem("observatory", self.observatory)
@@ -79,6 +118,16 @@ class SubsystemRegistry:
         self.register_subsystem("sanctum", self.sanctum)
         self.register_subsystem("forge", self.forge)
         self.register_subsystem("etherlink", self.etherlink)
+        self.register_subsystem("halo", self.halo)
+        self.register_subsystem("oracle", self.oracle)
+        self.register_subsystem("astral", self.astral)
+        self.register_subsystem("infinity", self.infinity)
+        self.register_subsystem("paradox", self.paradox)
+        self.register_subsystem("eclipse", self.eclipse)
+        self.register_subsystem("stardust", self.stardust)
+        self.register_subsystem("lattice", self.lattice)
+        self.register_subsystem("horizon", self.horizon)
+        self.register_subsystem("pantheon", self.pantheon)
 
     def register_subsystem(self, name: str, instance: Any) -> None:
         logger.info("Registering subsystem %s (placeholder)", name)

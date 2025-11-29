@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
 from app.core.registry import registry
@@ -14,26 +14,30 @@ class LoadPluginRequest(BaseModel):
     path: str
 
 
-@router.get("/list")
+async def halo_plugin_guard(request: Request) -> None:
+    await registry.guard.require(request, "plugin")
+
+
+@router.get("/list", dependencies=[Depends(halo_plugin_guard)])
 async def list_plugins() -> dict:
     return registry.forge.list_plugins()
 
 
-@router.post("/discover")
+@router.post("/discover", dependencies=[Depends(halo_plugin_guard)])
 async def discover() -> list[str]:
     return registry.forge.discover()
 
 
-@router.post("/load")
+@router.post("/load", dependencies=[Depends(halo_plugin_guard)])
 async def load_plugin(request: LoadPluginRequest):
     return registry.forge.load_plugin(request.path)
 
 
-@router.post("/enable/{name}")
+@router.post("/enable/{name}", dependencies=[Depends(halo_plugin_guard)])
 async def enable(name: str):
     return registry.forge.enable_plugin(name)
 
 
-@router.post("/disable/{name}")
+@router.post("/disable/{name}", dependencies=[Depends(halo_plugin_guard)])
 async def disable(name: str):
     return registry.forge.disable_plugin(name)
