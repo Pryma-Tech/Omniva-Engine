@@ -61,6 +61,7 @@ from app.api.routes import chorus as chorus_router
 from app.api.routes import halolux as halolux_router
 from app.api.routes import zenith as zenith_router
 from app.api.routes import safety as safety_router
+from app.models import init_db
 from app.subsystems.templates.template_store import TemplateStore
 from app.subsystems.projects.project_manager import ProjectManager
 from app.subsystems.orchestrator.pipeline_orchestrator import PipelineOrchestrator
@@ -77,6 +78,8 @@ register_subsystem("discovery", DiscoveryEngine())
 register_subsystem("intelligence", IntelligenceEngine())
 load_plugins()
 initialize_all()
+if config.database_url.startswith("sqlite"):
+    init_db()
 
 async def global_event_logger(data: dict):
     print(f"[EVENT] {data}")

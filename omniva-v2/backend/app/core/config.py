@@ -19,6 +19,8 @@ class Config:
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
     next_public_backend_url: str = "http://localhost:8000"
+    database_url: str = "sqlite:///storage/omniva.db"
+    database_echo: bool = False
 
 
 CONFIG = Config(
@@ -27,6 +29,8 @@ CONFIG = Config(
     backend_host=os.getenv("BACKEND_HOST", "0.0.0.0"),
     backend_port=int(os.getenv("BACKEND_PORT", "8000")),
     next_public_backend_url=os.getenv("NEXT_PUBLIC_BACKEND_URL", "http://localhost:8000"),
+    database_url=os.getenv("DATABASE_URL", "sqlite:///storage/omniva.db"),
+    database_echo=os.getenv("DATABASE_ECHO", "false").lower() in {"1", "true", "yes"},
 )
 
 

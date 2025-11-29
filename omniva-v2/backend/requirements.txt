@@ -15,3 +15,5 @@ apscheduler
 python-dateutil
 beautifulsoup4
 requests
+SQLAlchemy
+alembic
