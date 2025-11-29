@@ -1,3 +1,7 @@
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/strategy/novelty_rules.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/strategy/novelty_rules with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/strategy/novelty_rules with cognitive telemetry.
+
 from statistics import mean  # noqa: F401  # reserved for future composite metrics
 
 

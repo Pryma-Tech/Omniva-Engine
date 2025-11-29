@@ -1,4 +1,8 @@
 """Scenario engine for counterfactual branches."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/astral/scenario.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/astral/scenario with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/astral/scenario with cognitive telemetry.
+
 
 from __future__ import annotations
 

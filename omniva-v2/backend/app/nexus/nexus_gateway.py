@@ -1,4 +1,8 @@
 """Unified API façade and response normalizer for Omniva."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/nexus/nexus_gateway.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/nexus/nexus_gateway with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/nexus/nexus_gateway with cognitive telemetry.
+
 
 from __future__ import annotations
 

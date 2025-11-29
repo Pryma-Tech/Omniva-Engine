@@ -13,6 +13,9 @@ class HealthChecks:
         self.registry = registry
 
     def system_health(self) -> Dict:
+        # TODO(omniva-v0.1): Replace placeholder registry hooks with real subsystem adapters.
+        # TODO(omniva-v0.2): Persist health summaries to Stardust for time-series analysis.
+        # TODO(omniva-v0.3): Trigger Eclipse remediation when stress/drift exceed thresholds.
         intel = self.registry.get_subsystem("intelligence")
         fed = self.registry.get_subsystem("federation")
         crisis = self.registry.get_subsystem("crisis")

@@ -1,4 +1,8 @@
 """Project-specific plan helpers for Omniva HTN planner."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/intelligence/planner/project_plans.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/intelligence/planner/project_plans with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/intelligence/planner/project_plans with cognitive telemetry.
+
 
 from __future__ import annotations
 

@@ -1,4 +1,8 @@
 """
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/analysis/embedding_engine.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/analysis/embedding_engine with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/analysis/embedding_engine with cognitive telemetry.
+
 Embedding-based scoring helpers for transcript segments.
 """
 

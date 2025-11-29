@@ -1,3 +1,7 @@
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/archive/epoch_detector.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/archive/epoch_detector with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/archive/epoch_detector with cognitive telemetry.
+
 from statistics import mean
 
 

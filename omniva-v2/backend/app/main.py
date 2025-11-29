@@ -1,4 +1,8 @@
 """FastAPI entrypoint for Omniva Engine v2."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/main.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/main with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/main with cognitive telemetry.
+
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

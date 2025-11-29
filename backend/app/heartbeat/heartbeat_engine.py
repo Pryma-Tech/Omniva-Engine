@@ -18,6 +18,8 @@ class HeartbeatEngine:
         self._loop_task: asyncio.Task | None = None
 
     def start(self) -> dict:
+        # TODO(omniva-v0.1): Validate registry prerequisites before toggling heartbeat.
+        # TODO(omniva-v0.2): Support specifying custom intervals via payload/config.
         if self.running:
             return {"status": "already_running"}
         self.running = True
@@ -25,6 +27,7 @@ class HeartbeatEngine:
         return {"status": "heartbeat_started"}
 
     def stop(self) -> dict:
+        # TODO(omniva-v0.1): Flush pending tasks before stopping heartbeat loop.
         self.running = False
         if self._loop_task:
             self._loop_task.cancel()
@@ -32,6 +35,9 @@ class HeartbeatEngine:
         return {"status": "heartbeat_stopped"}
 
     async def run_loop(self) -> None:
+        # TODO(omniva-v0.1): Replace hard-coded intervals with configuration values.
+        # TODO(omniva-v0.2): Add structured logging/metrics for each loop iteration.
+        # TODO(omniva-v0.3): Allow pluggable scheduling policies (cron expressions).
         orch_interval = 10 * 60  # 10 minutes
         keepalive_interval = 2 * 60  # 2 minutes
         last_orch = datetime.utcnow()

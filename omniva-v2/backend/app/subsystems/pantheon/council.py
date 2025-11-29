@@ -1,4 +1,8 @@
 """Collective governance council for Omniva Pantheon."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/pantheon/council.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/pantheon/council with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/pantheon/council with cognitive telemetry.
+
 
 from __future__ import annotations
 

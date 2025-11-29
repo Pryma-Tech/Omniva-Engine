@@ -1,4 +1,8 @@
 """
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/editing/ffmpeg_util.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/editing/ffmpeg_util with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/editing/ffmpeg_util with cognitive telemetry.
+
 FFmpeg helper routines for clip extraction and formatting.
 """
 

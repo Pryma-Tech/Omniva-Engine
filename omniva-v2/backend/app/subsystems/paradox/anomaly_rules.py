@@ -1,4 +1,8 @@
 """Rule-based temporal anomaly detection for Omniva Paradox."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/paradox/anomaly_rules.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/paradox/anomaly_rules with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/paradox/anomaly_rules with cognitive telemetry.
+
 
 from __future__ import annotations
 

@@ -1,4 +1,8 @@
 """Emotional modulation generator for Omniva Chorus."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/chorus/harmonics.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/chorus/harmonics with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/chorus/harmonics with cognitive telemetry.
+
 
 from __future__ import annotations
 

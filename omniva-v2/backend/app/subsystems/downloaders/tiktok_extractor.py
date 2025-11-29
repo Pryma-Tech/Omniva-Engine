@@ -1,4 +1,8 @@
 """
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/downloaders/tiktok_extractor.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/downloaders/tiktok_extractor with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/downloaders/tiktok_extractor with cognitive telemetry.
+
 TikTok downloader powered by yt-dlp.
 """
 

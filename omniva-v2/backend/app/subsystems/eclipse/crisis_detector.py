@@ -1,4 +1,8 @@
 """Global crisis detection for Omniva Eclipse."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/eclipse/crisis_detector.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/eclipse/crisis_detector with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/eclipse/crisis_detector with cognitive telemetry.
+
 
 from __future__ import annotations
 

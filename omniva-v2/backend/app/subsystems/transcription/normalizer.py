@@ -1,4 +1,8 @@
 """
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/transcription/normalizer.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/transcription/normalizer with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/transcription/normalizer with cognitive telemetry.
+
 Utility helpers for parsing Whisper segments to Omniva's normalized format.
 """
 

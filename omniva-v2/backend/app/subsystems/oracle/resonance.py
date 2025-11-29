@@ -1,4 +1,8 @@
 """Cross-project resonance heuristics."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/oracle/resonance.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/oracle/resonance with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/oracle/resonance with cognitive telemetry.
+
 
 from __future__ import annotations
 

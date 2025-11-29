@@ -1,4 +1,8 @@
 """Subsystem registry (placeholder)."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/core/registry.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/core/registry with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/core/registry with cognitive telemetry.
+
 # TODO: Add lifecycle management and plugin discovery.
 
 import logging

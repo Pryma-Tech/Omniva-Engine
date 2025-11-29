@@ -1,4 +1,8 @@
 """Governance policy API."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/api/routes/governance.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/api/routes/governance with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/api/routes/governance with cognitive telemetry.
+
 
 from fastapi import APIRouter
 

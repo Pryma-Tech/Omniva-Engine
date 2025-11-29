@@ -1,4 +1,8 @@
 """
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/core/worker_engine.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/core/worker_engine with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/core/worker_engine with cognitive telemetry.
+
 Worker engine with concurrency, retries, and watchdog monitoring.
 """
 

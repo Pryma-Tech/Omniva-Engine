@@ -1,4 +1,8 @@
 """
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/core/job_queue.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/core/job_queue with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/core/job_queue with cognitive telemetry.
+
 Persistent job queue with retry tracking and execution helpers.
 """
 

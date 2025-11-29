@@ -1,4 +1,8 @@
 """Universal inter-system relation index for Omniva Lattice."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/lattice/fabric.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/lattice/fabric with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/lattice/fabric with cognitive telemetry.
+
 
 from __future__ import annotations
 

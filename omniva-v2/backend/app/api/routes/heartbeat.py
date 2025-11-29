@@ -1,4 +1,8 @@
 """Heartbeat control API."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/api/routes/heartbeat.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/api/routes/heartbeat with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/api/routes/heartbeat with cognitive telemetry.
+
 
 from fastapi import APIRouter
 

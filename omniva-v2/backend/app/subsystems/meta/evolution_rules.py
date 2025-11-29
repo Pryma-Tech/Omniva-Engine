@@ -1,4 +1,8 @@
 """Deterministic evolution rules for strategic meta-learning."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/meta/evolution_rules.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/meta/evolution_rules with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/meta/evolution_rules with cognitive telemetry.
+
 
 from __future__ import annotations
 

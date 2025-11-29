@@ -1,4 +1,8 @@
 """
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/downloaders/base_extractor.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/downloaders/base_extractor with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/downloaders/base_extractor with cognitive telemetry.
+
 Abstract base class for download extractors.
 """
 
@@ -15,4 +19,3 @@ class BaseExtractor(ABC):
         Download the provided URL into the output directory.
         Returns the downloaded filename on success and None on failure.
         """
-

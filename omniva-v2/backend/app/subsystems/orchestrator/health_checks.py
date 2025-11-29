@@ -1,4 +1,8 @@
 """Global health diagnostics for Omniva orchestration."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/orchestrator/health_checks.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/orchestrator/health_checks with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/orchestrator/health_checks with cognitive telemetry.
+
 
 from __future__ import annotations
 

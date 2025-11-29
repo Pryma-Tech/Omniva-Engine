@@ -1,4 +1,8 @@
 """Recovery rituals and reboot orchestration for Omniva Eclipse."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/eclipse/recovery.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/eclipse/recovery with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/eclipse/recovery with cognitive telemetry.
+
 
 from __future__ import annotations
 

@@ -1,4 +1,8 @@
 """Autonomous mode engine for Omniva Engine v2."""
+# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/autonomous/autonomous_engine.
+# TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/autonomous/autonomous_engine with advanced behaviors.
+# TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/autonomous/autonomous_engine with cognitive telemetry.
+
 
 import asyncio
 from typing import Any, Dict, List
