@@ -2,7 +2,7 @@
 Creator discovery engine for Omniva Engine v2.
 """
 
-from typing import List
+from typing import Dict, List
 
 from app.core.registry import registry
 from app.subsystems.discovery.seen_store import SeenPostsStore
@@ -53,6 +53,24 @@ class DiscoveryEngine:
     def discover_new_posts(self, project_id: int) -> List[str]:
         """Alias used by the autonomous engine."""
         return self.discover_for_project(project_id)
+
+    def check_new_posts(self, project_id: int) -> List[str]:
+        """
+        Observability-friendly alias expected by the Nexus composer.
+        """
+        return self.discover_new_posts(project_id)
+
+    def check_all_projects(self) -> Dict[int, List[str]]:
+        """
+        Run discovery across every registered project.
+        """
+        manager = registry.get_subsystem("project_manager")
+        if not manager or not hasattr(manager, "get_all_project_ids"):
+            return {}
+        results: Dict[int, List[str]] = {}
+        for project_id in manager.get_all_project_ids():
+            results[project_id] = self.discover_for_project(project_id)
+        return results
 
     def status(self) -> dict:
         return {"name": self.name, "status": "ok"}

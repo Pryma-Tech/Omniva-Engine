@@ -88,3 +88,17 @@ class GovernanceEngine:
         if policy["require_manual_review"]:
             return False, "Manual review required before execution"
         return True, None
+
+    def snapshot(self) -> Dict[str, Dict]:
+        """
+        Provide a lightweight governance overview for the Nexus composer.
+        """
+        policies = {pid: policy for pid, policy in self.policy_model.policies.items()}
+        history = {
+            pid: [stamp.isoformat() for stamp in stamps[-5:]]
+            for pid, stamps in self.post_history.items()
+        }
+        return {
+            "policies": policies,
+            "recent_posts": history,
+        }

@@ -1,0 +1,16 @@
+{
+  "name": "example_plugin",
+  "version": "0.1.0",
+  "description": "Sample plugin demonstrating Omniva Forge hooks.",
+  "author": "Omniva Labs",
+  "entrypoint": "plugin.py",
+  "routes": [
+    "/plugins/example/status"
+  ],
+  "commands": [
+    "plugin.example.ping"
+  ],
+  "events": [
+    "plugin_example_event"
+  ]
+}

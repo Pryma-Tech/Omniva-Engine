@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import load_config
 from app.core.event_bus import event_bus
 from app.core.plugins import load_plugins
-from app.core.registry import initialize_all, list_subsystems, register_subsystem
+from app.core.registry import initialize_all, list_subsystems, register_subsystem, registry
 from app.core.job_queue import get_job_queue
 from app.api.routes import analysis as analysis_router
 from app.api.routes import autonomous as autonomous_router
@@ -25,9 +25,11 @@ from app.api.routes import meta as meta_router
 from app.api.routes import orchestrator as orchestrator_router
 from app.api.routes import heartbeat as heartbeat_router
 from app.api.routes import constellation as constellation_router
+from app.api.routes import observatory as observatory_router
 from app.api.routes import strategy as strategy_router
 from app.api.routes import identity as identity_router
 from app.api.routes import soulbind as soul_router
+from app.api.routes import archive as archive_router
 from app.api.routes import pipeline as pipeline_router
 from app.api.routes import projects as projects_router
 from app.api.routes import scheduler as scheduler_router
@@ -38,6 +40,9 @@ from app.api.routes import transcription as transcription_router
 from app.api.routes import uploader as uploader_router
 from app.api.routes import worker as worker_router
 from app.api.routes import workers as workers_router
+from app.api.routes import sanctum as sanctum_router
+from app.api.routes import forge as forge_router
+from app.api.routes import etherlink as etherlink_router
 from app.api.routes import safety as safety_router
 from app.subsystems.templates.template_store import TemplateStore
 from app.subsystems.projects.project_manager import ProjectManager
@@ -114,9 +119,11 @@ app.include_router(meta_router.router, tags=["meta"])
 app.include_router(orchestrator_router.router, tags=["orchestrator"])
 app.include_router(heartbeat_router.router, tags=["heartbeat"])
 app.include_router(constellation_router.router, tags=["constellation"])
+app.include_router(observatory_router.router, tags=["observatory"])
 app.include_router(strategy_router.router, tags=["strategy"])
 app.include_router(identity_router.router, tags=["identity"])
 app.include_router(soul_router.router, tags=["soul"])
+app.include_router(archive_router.router, tags=["archive"])
 app.include_router(transcription_router.router, prefix="/transcription", tags=["transcription"])
 app.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
 app.include_router(download_router.router, prefix="/download", tags=["download"])
@@ -126,7 +133,12 @@ app.include_router(scheduler_router.router, prefix="/scheduler", tags=["schedule
 app.include_router(templates_router.router, prefix="/templates", tags=["templates"])
 app.include_router(worker_router.router, prefix="/worker", tags=["worker"])
 app.include_router(workers_router.router, prefix="/workers", tags=["workers"])
+app.include_router(sanctum_router.router)
+app.include_router(forge_router.router)
+app.include_router(etherlink_router.router)
 app.include_router(intelligence_router.router, prefix="/intelligence", tags=["intelligence"])
+app.include_router(registry.forge.plugin_router)
+app.include_router(registry.nexus.router)
 
 
 @app.get("/info")

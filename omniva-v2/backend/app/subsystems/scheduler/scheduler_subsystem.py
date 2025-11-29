@@ -70,6 +70,24 @@ class SchedulingSubsystem:
             json.dump(existing, queue_file, indent=2)
         return record
 
+    def suggest_post_time(self, project_id: int) -> Dict[str, Any]:
+        """
+        Surface either a predictive suggestion or the configured schedule.
+        """
+        intel = registry.get_subsystem("intelligence")
+        suggestion: Dict[str, Any] = {}
+        if intel and hasattr(intel, "choose_posting_time"):
+            try:
+                suggestion = intel.choose_posting_time(project_id)
+            except Exception:  # pragma: no cover - prediction fallback
+                suggestion = {}
+        schedule = self.store.get_project_schedule(project_id)
+        return {
+            "project_id": project_id,
+            "suggestion": suggestion,
+            "schedule": schedule,
+        }
+
     def status(self) -> Dict[str, str]:
         return {"name": self.name, "status": "ok"}
 

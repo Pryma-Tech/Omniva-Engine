@@ -3,6 +3,7 @@ Asynchronous EventBus with basic history tracking.
 """
 
 import asyncio
+import inspect
 from collections import defaultdict
 from datetime import datetime
 from typing import Any, Awaitable, Callable, DefaultDict, Dict, List
@@ -17,6 +18,7 @@ class EventBus:
         self.subscribers: DefaultDict[str, List[AsyncHandler]] = defaultdict(list)
         self.event_log: List[Dict[str, Any]] = []
         self.lock = asyncio.Lock()
+        self.plugin_hooks: List[Callable[[str, Dict[str, Any]], Any]] = []
 
     def subscribe(self, event_name: str, callback: AsyncHandler) -> None:
         """Register an async handler for the event."""
@@ -33,6 +35,8 @@ class EventBus:
                 }
             )
         self._symbolic_observer(event_name, data)
+        self._archive_observer(event_name, data)
+        self._plugin_observer(event_name, data)
 
         handlers = self.subscribers.get(event_name, [])
         tasks = [asyncio.create_task(handler(data)) for handler in handlers]
@@ -61,6 +65,34 @@ class EventBus:
         except Exception:
             # Symbolic logging should never break the pipeline.
             pass
+
+    def _archive_observer(self, event_name: str, data: Dict[str, Any]) -> None:
+        try:
+            from app.core.registry import registry
+        except Exception:
+            return
+        archive = getattr(registry, "archive", None) or registry.get_subsystem("archive")
+        if not archive:
+            return
+        try:
+            archive.record(event_name, data)
+            archive.update_epoch()
+        except Exception:
+            pass
+
+    def register_plugin_hook(self, handler: Callable[[str, Dict[str, Any]], Any]) -> None:
+        """Allow plugins to observe events in a safe manner."""
+        if handler not in self.plugin_hooks:
+            self.plugin_hooks.append(handler)
+
+    def _plugin_observer(self, event_name: str, data: Dict[str, Any]) -> None:
+        for handler in list(self.plugin_hooks):
+            try:
+                result = handler(event_name, data)
+                if inspect.iscoroutine(result):
+                    asyncio.create_task(result)
+            except Exception:
+                continue
 
 
 event_bus = EventBus()

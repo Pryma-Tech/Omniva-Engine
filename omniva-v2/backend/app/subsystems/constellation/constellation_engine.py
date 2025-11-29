@@ -27,3 +27,14 @@ class ConstellationEngine:
         if federation:
             return federation.shared_heuristics.get("niche_similarity", [])
         return []
+
+    def consensus(self) -> Dict:
+        """
+        Provide a high-level consensus snapshot consumed by the Nexus composer.
+        """
+        links = self.cross_project_cooperation()
+        return {
+            "links": links,
+            "link_count": len(links),
+            "consensus_strength": min(1.0, len(links) / 10.0),
+        }
