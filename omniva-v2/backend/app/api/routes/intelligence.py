@@ -249,3 +249,13 @@ async def run_deliberation(project_id: int, payload: dict) -> dict:
 async def get_emotion(project_id: int) -> dict:
     intel = _engine()
     return intel.emotion_model.get(project_id)
+
+
+@router.post("/brain/{project_id}")
+async def brain_decision(project_id: int, payload: dict) -> dict:
+    """
+    payload = { "clips": [...] }
+    """
+    intel = _engine()
+    clips = payload.get("clips", []) if payload else []
+    return intel.brain_decide(project_id, clips)

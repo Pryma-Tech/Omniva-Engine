@@ -31,6 +31,7 @@ class IntelligenceEngine:
         from .self_opt.optimizer_engine import MetaOptimizerEngine
         from .planner.planner_engine import PlannerEngine
         from .deliberation.deliberation_engine import DeliberationEngine
+        from .brain.brain_engine import UnifiedAgentBrain
         from .prioritizer.prioritizer_engine import ClipPrioritizer
 
         self.posting_time = PostingTimePredictor()
@@ -50,6 +51,7 @@ class IntelligenceEngine:
         self.cognition = CognitiveEngine()
         self.planner = PlannerEngine()
         self.deliberation = DeliberationEngine(registry)
+        self.brain = UnifiedAgentBrain(registry)
 
         self.modes = {
             "viral": ViralFirstMode(self),
@@ -230,6 +232,9 @@ class IntelligenceEngine:
 
     def deliberate(self, project_id: int, scored_clips: list):
         return self.deliberation.deliberate(project_id, scored_clips)
+
+    def brain_decide(self, project_id: int, clips: list):
+        return self.brain.decide(project_id, clips)
 
     def status(self) -> dict:
         return {

@@ -32,6 +32,7 @@ class EventBus:
                     "data": data,
                 }
             )
+        self._symbolic_observer(event_name, data)
 
         handlers = self.subscribers.get(event_name, [])
         tasks = [asyncio.create_task(handler(data)) for handler in handlers]
@@ -45,6 +46,21 @@ class EventBus:
     def get_log(self) -> List[Dict[str, Any]]:
         """Return a snapshot of the event log."""
         return list(self.event_log)
+
+    def _symbolic_observer(self, event_name: str, data: Dict[str, Any]) -> None:
+        """Forward events to the Soul Bind layer if available."""
+        try:
+            from app.core.registry import registry
+        except Exception:
+            return
+        soul = getattr(registry, "soul", None) or registry.get_subsystem("soul")
+        if not soul:
+            return
+        try:
+            soul.interpret_event(event_name, data)
+        except Exception:
+            # Symbolic logging should never break the pipeline.
+            pass
 
 
 event_bus = EventBus()

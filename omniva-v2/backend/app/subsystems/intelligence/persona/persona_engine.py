@@ -18,9 +18,15 @@ class PersonaEngine:
         self.committee = PersonaCommittee(self.temperaments, self.voices)
         self.active: Dict[int, Dict[str, List[str]]] = {}
 
-    def set_persona(self, project_id: int, temperament: str, voice: str, committee: List[str] | None = None):
+    def set_persona(self, project_id: int, temperament, voice: str | None = None, committee: List[str] | None = None):
+        if isinstance(temperament, dict):
+            config = temperament
+            temperament = config.get("temperament", "calm")
+            voice = config.get("voice", "minimal")
+            committee = config.get("committee", [])
         if temperament not in self.temperaments:
             raise ValueError("Unknown temperament")
+        voice = voice or "minimal"
         if voice not in self.voices:
             raise ValueError("Unknown voice")
         committee = committee or []

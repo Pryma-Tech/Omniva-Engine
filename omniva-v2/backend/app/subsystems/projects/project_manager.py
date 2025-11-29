@@ -25,6 +25,9 @@ class ProjectManager:
     def get(self, project_id: int) -> Dict[str, Any]:
         return self.store.get(project_id)
 
+    def get_project_config(self, project_id: int) -> Dict[str, Any]:
+        return self.store.get(project_id)
+
     def save(self, project_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
         return self.store.save(project_id, data)
 
@@ -33,6 +36,13 @@ class ProjectManager:
 
     def list_all(self) -> List[Dict[str, Any]]:
         return self.store.list_all()
+
+    def get_project_clips(self, project_id: int) -> List[Dict[str, Any]]:
+        project = self.get(project_id)
+        return list(project.get("clips", []))
+
+    def get_all_project_ids(self) -> List[int]:
+        return self.store.list_ids()
 
     def status(self) -> Dict[str, str]:
         return {"name": self.name, "status": "ok"}

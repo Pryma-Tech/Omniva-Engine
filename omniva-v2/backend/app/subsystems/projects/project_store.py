@@ -28,6 +28,7 @@ class ProjectStore:
             "shadow_mode": True,
             "daily_limit": 3,
             "auto_publish_mode": "schedule",
+            "clips": [],
         }
         merged = {**defaults, **(data or {})}
         merged["project_id"] = project_id
@@ -57,3 +58,11 @@ class ProjectStore:
             project_id = int(file_name.replace(".json", ""))
             projects.append(self.get(project_id))
         return projects
+
+    def list_ids(self) -> List[int]:
+        ids: List[int] = []
+        for file_name in os.listdir(self.base):
+            if not file_name.endswith(".json"):
+                continue
+            ids.append(int(file_name.replace(".json", "")))
+        return sorted(ids)

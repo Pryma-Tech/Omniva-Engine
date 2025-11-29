@@ -17,6 +17,17 @@ from app.api.routes import events as events_router
 from app.api.routes import jobs as jobs_router
 from app.api.routes import health as health_router
 from app.api.routes import intelligence as intelligence_router
+from app.api.routes import autonomy as autonomy_router
+from app.api.routes import safety as safety_router
+from app.api.routes import governance as governance_router
+from app.api.routes import federation as federation_router
+from app.api.routes import meta as meta_router
+from app.api.routes import orchestrator as orchestrator_router
+from app.api.routes import heartbeat as heartbeat_router
+from app.api.routes import constellation as constellation_router
+from app.api.routes import strategy as strategy_router
+from app.api.routes import identity as identity_router
+from app.api.routes import soulbind as soul_router
 from app.api.routes import pipeline as pipeline_router
 from app.api.routes import projects as projects_router
 from app.api.routes import scheduler as scheduler_router
@@ -27,6 +38,7 @@ from app.api.routes import transcription as transcription_router
 from app.api.routes import uploader as uploader_router
 from app.api.routes import worker as worker_router
 from app.api.routes import workers as workers_router
+from app.api.routes import safety as safety_router
 from app.subsystems.templates.template_store import TemplateStore
 from app.subsystems.projects.project_manager import ProjectManager
 from app.subsystems.orchestrator.pipeline_orchestrator import PipelineOrchestrator
@@ -94,6 +106,17 @@ app.include_router(jobs_router.router, prefix="/jobs", tags=["jobs"])
 app.include_router(health_router.router, prefix="/health", tags=["health"])
 app.include_router(discovery_router.router, prefix="/discover", tags=["discovery"])
 app.include_router(autonomous_router.router, prefix="/autonomous", tags=["autonomous"])
+app.include_router(autonomy_router.router, tags=["autonomy"])
+app.include_router(safety_router.router, tags=["safety"])
+app.include_router(governance_router.router, tags=["governance"])
+app.include_router(federation_router.router, tags=["federation"])
+app.include_router(meta_router.router, tags=["meta"])
+app.include_router(orchestrator_router.router, tags=["orchestrator"])
+app.include_router(heartbeat_router.router, tags=["heartbeat"])
+app.include_router(constellation_router.router, tags=["constellation"])
+app.include_router(strategy_router.router, tags=["strategy"])
+app.include_router(identity_router.router, tags=["identity"])
+app.include_router(soul_router.router, tags=["soul"])
 app.include_router(transcription_router.router, prefix="/transcription", tags=["transcription"])
 app.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
 app.include_router(download_router.router, prefix="/download", tags=["download"])
