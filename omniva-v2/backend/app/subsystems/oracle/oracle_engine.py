@@ -73,3 +73,25 @@ class OracleEngine:
             "epoch": self.registry.archive.current_epoch,
             "identity": self.registry.selfmodel.get_identity(),
         }
+
+    def system_summary(self) -> Dict[str, float]:
+        """
+        Provide aggregate drift/stress/trend metrics used by Chorus/Horizon layers.
+        """
+        project_ids = self._project_ids()
+        if not project_ids:
+            return {"drift": 0.2, "stress": 0.3, "trend": 0.4}
+        drifts: List[float] = []
+        stresses: List[float] = []
+        trends: List[float] = []
+        for pid in project_ids:
+            forecast = self.project_forecast(pid)
+            drifts.append(forecast["drift"]["expected"])
+            stresses.append(forecast["stress"]["expected"])
+            trends.append(forecast["trend"]["expected"])
+        avg = lambda values: sum(values) / max(len(values), 1)
+        return {
+            "drift": round(avg(drifts), 4),
+            "stress": round(avg(stresses), 4),
+            "trend": round(avg(trends), 4),
+        }

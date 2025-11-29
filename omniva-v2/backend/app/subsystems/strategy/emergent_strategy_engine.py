@@ -106,3 +106,17 @@ class EmergentStrategyEngine:
             "strategies": self.strategies,
             "constellation": constellation_view,
         }
+
+    def recommend_for_project(self, project_id: int) -> Dict[str, Any]:
+        """
+        Provide a lightweight recommendation summary for a project.
+        """
+        if project_id not in self.strategies:
+            return self.generate_for_project(project_id)
+        return self.strategies[project_id]
+
+    def global_summary(self) -> Dict[str, Any]:
+        return {
+            "strategy_count": len(self.strategies),
+            "last_entries": list(self.strategies.values())[-5:],
+        }

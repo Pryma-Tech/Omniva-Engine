@@ -53,6 +53,9 @@ from app.api.routes import stardust as stardust_router
 from app.api.routes import lattice as lattice_router
 from app.api.routes import horizon as horizon_router
 from app.api.routes import pantheon as pantheon_router
+from app.api.routes import chorus as chorus_router
+from app.api.routes import halolux as halolux_router
+from app.api.routes import zenith as zenith_router
 from app.api.routes import safety as safety_router
 from app.subsystems.templates.template_store import TemplateStore
 from app.subsystems.projects.project_manager import ProjectManager
@@ -156,6 +159,9 @@ app.include_router(stardust_router.router)
 app.include_router(lattice_router.router)
 app.include_router(horizon_router.router)
 app.include_router(pantheon_router.router)
+app.include_router(chorus_router.router)
+app.include_router(halolux_router.router)
+app.include_router(zenith_router.router)
 app.include_router(intelligence_router.router, prefix="/intelligence", tags=["intelligence"])
 app.include_router(registry.forge.plugin_router)
 app.include_router(registry.nexus.router)

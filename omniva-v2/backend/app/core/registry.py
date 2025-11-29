@@ -35,6 +35,9 @@ from app.subsystems.stardust import AttributionGraph, StardustEngine
 from app.subsystems.lattice import LatticeFabric, LatticeLinker, LatticeEngine
 from app.subsystems.horizon import HorizonGoalModel, HorizonAlignmentEngine, HorizonEngine
 from app.subsystems.pantheon import Harmonizer, Guardian, Strategist, Explorer, PantheonCouncil, PantheonEngine
+from app.subsystems.chorus import ChorusEngine, HarmonicsEngine, ResonanceField
+from app.subsystems.halolux import HaloLightfield, HaloExplainer, HaloLuxEngine
+from app.subsystems.zenith import ZenithCoherence, ZenithReflection, ZenithEngine
 
 logger = logging.getLogger("omniva_v2")
 
@@ -111,6 +114,15 @@ class SubsystemRegistry:
         self.archetypes = [Strategist(), Explorer(), Guardian(), Harmonizer()]
         self.pantheon_council = PantheonCouncil(self.archetypes)
         self.pantheon = PantheonEngine(self, self.pantheon_council)
+        self.chorus_resonance = ResonanceField(self)
+        self.chorus_harmonics = HarmonicsEngine()
+        self.chorus = ChorusEngine(self, self.chorus_resonance, self.chorus_harmonics)
+        self.halolux_lightfield = HaloLightfield(self)
+        self.halolux_explainer = HaloExplainer(self, self.halolux_lightfield)
+        self.halolux = HaloLuxEngine(self, self.halolux_lightfield, self.halolux_explainer)
+        self.zenith_coherence = ZenithCoherence(self)
+        self.zenith_reflection = ZenithReflection(self, self.zenith_coherence)
+        self.zenith = ZenithEngine(self, self.zenith_coherence, self.zenith_reflection)
         self.register_subsystem("soul", self.soul)
         self.register_subsystem("archive", self.archive)
         self.register_subsystem("observatory", self.observatory)
@@ -128,6 +140,9 @@ class SubsystemRegistry:
         self.register_subsystem("lattice", self.lattice)
         self.register_subsystem("horizon", self.horizon)
         self.register_subsystem("pantheon", self.pantheon)
+        self.register_subsystem("chorus", self.chorus)
+        self.register_subsystem("halolux", self.halolux)
+        self.register_subsystem("zenith", self.zenith)
 
     def register_subsystem(self, name: str, instance: Any) -> None:
         logger.info("Registering subsystem %s (placeholder)", name)
