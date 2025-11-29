@@ -2,7 +2,10 @@
 Cron-based scheduling subsystem backed by APScheduler.
 """
 
-from typing import Any, Dict
+import json
+import os
+from datetime import datetime
+from typing import Any, Dict, List
 
 from app.core.registry import registry
 
@@ -44,6 +47,28 @@ class SchedulingSubsystem:
 
     def get_project_schedule(self, project_id: int) -> Dict[str, Any]:
         return self.store.get_project_schedule(project_id)
+
+    def queue_clip(self, project_id: int, filepath: str, reason: str = "") -> Dict[str, Any]:
+        """
+        Persist a scheduled clip request for later publishing.
+        """
+        queue_dir = os.path.join("storage", "projects", str(project_id), "queue")
+        os.makedirs(queue_dir, exist_ok=True)
+        queue_path = os.path.join(queue_dir, "clips.json")
+        record = {
+            "project_id": project_id,
+            "file": filepath,
+            "reason": reason,
+            "queued_at": datetime.utcnow().isoformat(),
+        }
+        existing: List[Dict[str, Any]] = []
+        if os.path.exists(queue_path):
+            with open(queue_path, "r", encoding="utf-8") as queue_file:
+                existing = json.load(queue_file)
+        existing.append(record)
+        with open(queue_path, "w", encoding="utf-8") as queue_file:
+            json.dump(existing, queue_file, indent=2)
+        return record
 
     def status(self) -> Dict[str, str]:
         return {"name": self.name, "status": "ok"}

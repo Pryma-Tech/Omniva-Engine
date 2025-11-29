@@ -50,5 +50,9 @@ class DiscoveryEngine:
             new_posts.extend(self.discover_for_creator(project_id, creator))
         return new_posts
 
+    def discover_new_posts(self, project_id: int) -> List[str]:
+        """Alias used by the autonomous engine."""
+        return self.discover_for_project(project_id)
+
     def status(self) -> dict:
         return {"name": self.name, "status": "ok"}

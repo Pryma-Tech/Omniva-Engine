@@ -66,6 +66,17 @@ reliability_events = [
 for evt in reliability_events:
     event_bus.subscribe(evt, global_event_logger)
 
+event_bus.subscribe("autonomous_discovered_links", global_event_logger)
+event_bus.subscribe("autonomous_clip_downloaded", global_event_logger)
+event_bus.subscribe("autonomous_transcribed", global_event_logger)
+event_bus.subscribe("autonomous_analyzed", global_event_logger)
+event_bus.subscribe("autonomous_scores_generated", global_event_logger)
+event_bus.subscribe("autonomous_prioritized", global_event_logger)
+event_bus.subscribe("autonomous_recommended", global_event_logger)
+event_bus.subscribe("autonomous_uploaded", global_event_logger)
+event_bus.subscribe("autonomous_scheduled", global_event_logger)
+event_bus.subscribe("ghost_run_completed", global_event_logger)
+
 app = FastAPI(title=config.app_name, version="0.1.0")
 app.add_middleware(
     CORSMiddleware,

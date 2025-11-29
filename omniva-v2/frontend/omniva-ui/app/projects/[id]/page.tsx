@@ -35,6 +35,17 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     setResp(await res.json());
   };
 
+  const toggleAutonomous = async (state: "on" | "off") => {
+    if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+      return;
+    }
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/autonomous/${projectId}/${state}`, {
+      method: "POST",
+    });
+    setResp(await res.json());
+    await load();
+  };
+
   useEffect(() => {
     load();
   }, [projectId]);
@@ -45,6 +56,15 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       <button onClick={load} style={{ marginBottom: 12 }}>
         Reload
       </button>
+
+      <div style={{ marginBottom: 12 }}>
+        <button onClick={() => toggleAutonomous("on")} style={{ marginRight: 8 }}>
+          Enable Autonomous Mode
+        </button>
+        <button onClick={() => toggleAutonomous("off")}>
+          Disable Autonomous Mode
+        </button>
+      </div>
 
       <h3>Creators</h3>
       <textarea value={creators} onChange={(event) => setCreators(event.target.value)} style={{ width: 400, height: 120 }} />

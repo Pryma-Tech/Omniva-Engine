@@ -2,6 +2,7 @@
 Real analysis subsystem performing semantic scoring on transcripts.
 """
 
+import hashlib
 import json
 import os
 from typing import Any, Dict, List, Optional
@@ -25,6 +26,13 @@ class AnalysisSubsystem:
 
     def initialize(self) -> Dict[str, str]:
         return {"status": "analysis subsystem initialized"}
+
+    def analyze(self, transcript: str) -> Dict[str, Any]:
+        """
+        Lightweight analyzer used by the autonomous loop.
+        """
+        clip_id = hashlib.sha256(transcript.encode("utf-8")).hexdigest()[:12] if transcript else "unknown"
+        return {"clip_id": clip_id, "transcript": transcript}
 
     def analyze_transcript(
         self,

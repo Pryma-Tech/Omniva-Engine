@@ -2,6 +2,7 @@
 Uploader subsystem that handles OAuth + YouTube uploads.
 """
 
+import asyncio
 import os
 from datetime import datetime
 from typing import Any, Dict, List
@@ -23,6 +24,12 @@ class UploaderSubsystem:
 
     def initialize(self) -> Dict[str, str]:
         return {"status": "uploader subsystem initialized"}
+
+    async def upload(self, project_id: int, clip: str) -> Dict[str, Any]:
+        """
+        Async wrapper for the autonomous loop.
+        """
+        return await asyncio.to_thread(self.upload_clips, [clip], project_id)
 
     def upload_clips(self, clips: List[str], project_id: int) -> Dict[str, Any]:
         """Upload the provided clip filepaths."""

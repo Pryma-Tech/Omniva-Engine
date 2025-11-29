@@ -2,6 +2,7 @@
 Downloader subsystem wired to platform extractors.
 """
 
+import asyncio
 import os
 from typing import Any, Dict
 
@@ -28,6 +29,21 @@ class DownloadSubsystem:
     def initialize(self) -> Dict[str, str]:
         return {"status": "download subsystem initialized"}
 
+    async def download(self, project_id: int, url: str) -> str:
+        """
+        Async-friendly wrapper that downloads media without enqueuing jobs.
+        """
+        platform = URLDetector.detect(url)
+        if platform == "unknown":
+            raise ValueError(f"unsupported platform for url: {url}")
+
+        extractor = EXTRACTORS[platform]
+        output_dir = os.path.join("storage", "projects", str(project_id), "raw")
+        os.makedirs(output_dir, exist_ok=True)
+
+        filepath = await asyncio.to_thread(extractor.download, url, output_dir)
+        return filepath
+
     def download_url(self, url: str, project_id: int) -> Dict[str, Any]:
         """Download the provided URL and emit completion events."""
         platform = URLDetector.detect(url)
@@ -51,4 +67,6 @@ class DownloadSubsystem:
         return {"name": self.name, "status": "ok"}
 
 
-registry.register_subsystem("download", DownloadSubsystem())
+download_subsystem = DownloadSubsystem()
+registry.register_subsystem("download", download_subsystem)
+registry.register_subsystem("downloader", download_subsystem)

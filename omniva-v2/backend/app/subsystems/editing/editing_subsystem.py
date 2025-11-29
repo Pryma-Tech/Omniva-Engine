@@ -2,8 +2,10 @@
 FFmpeg-powered editing subsystem.
 """
 
+import asyncio
 import json
 import os
+import shutil
 from typing import Any, Dict, List
 
 from app.core.event_bus import event_bus
@@ -35,6 +37,24 @@ class EditingSubsystem:
 
     def initialize(self) -> Dict[str, str]:
         return {"status": "editing subsystem initialized"}
+
+    async def render(self, project_id: int, source_file: str, transcript: str) -> str:
+        """
+        Lightweight render wrapper for the autonomous loop.
+        """
+        output_dir = os.path.join("storage", "projects", str(project_id), "clips")
+        os.makedirs(output_dir, exist_ok=True)
+        base_name = os.path.splitext(os.path.basename(source_file))[0]
+        output_path = os.path.join(output_dir, f"{base_name}_rendered.mp4")
+        await asyncio.to_thread(shutil.copy, source_file, output_path)
+        # attach transcript for future overlays (not used yet)
+        meta_path = os.path.join(output_dir, f"{base_name}_transcript.txt")
+        def _write_transcript() -> None:
+            with open(meta_path, "w", encoding="utf-8") as handle:
+                handle.write(transcript or "")
+
+        await asyncio.to_thread(_write_transcript)
+        return output_path
 
     def edit_clip(self, analysis_filepath: str, project_id: int, top_n: int = 1) -> Dict[str, Any]:
         """Render the top N clip candidates into share-ready videos."""
