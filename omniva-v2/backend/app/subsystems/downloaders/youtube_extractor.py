@@ -1,10 +1,7 @@
-"""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/downloaders/youtube_extractor.
+"""YouTube downloader powered by yt-dlp."""
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/downloaders/youtube_extractor with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/downloaders/youtube_extractor with cognitive telemetry.
-
-YouTube downloader powered by yt-dlp.
-"""
 
 import os
 

@@ -1,10 +1,7 @@
-"""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/downloaders/base_extractor.
+"""Abstract base class for download extractors."""
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/downloaders/base_extractor with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/downloaders/base_extractor with cognitive telemetry.
-
-Abstract base class for download extractors.
-"""
 
 from abc import ABC, abstractmethod
 from typing import Optional

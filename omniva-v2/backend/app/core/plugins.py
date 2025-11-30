@@ -1,5 +1,9 @@
-"""Subsystem plugin loader (placeholder)."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/core/plugins.
+"""Subsystem plugin loader.
+
+This module is responsible for importing and registering core subsystems
+so they are available via the central registry.
+"""
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/core/plugins with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/core/plugins with cognitive telemetry.
 

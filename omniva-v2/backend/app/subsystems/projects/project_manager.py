@@ -1,10 +1,13 @@
+"""Project manager subsystem.
+
+Provides a thin abstraction over :class:`ProjectStore` so that the rest
+of the system can treat project configuration as a subsystem. This v0.1
+implementation is intentionally simple and delegates persistence details
+to the underlying store.
 """
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/projects/project_manager.
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/projects/project_manager with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/projects/project_manager with cognitive telemetry.
-
-Project manager subsystem.
-"""
 
 from typing import Any, Dict, List
 

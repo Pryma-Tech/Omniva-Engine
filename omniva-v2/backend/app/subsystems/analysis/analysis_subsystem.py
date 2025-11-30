@@ -1,10 +1,7 @@
-"""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/analysis/analysis_subsystem.
+"""Real analysis subsystem performing semantic scoring on transcripts."""
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/analysis/analysis_subsystem with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/analysis/analysis_subsystem with cognitive telemetry.
-
-Real analysis subsystem performing semantic scoring on transcripts.
-"""
 
 import hashlib
 import json

@@ -1,10 +1,7 @@
-"""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/discovery/discovery_engine.
+"""Creator discovery engine for Omniva Engine v2."""
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/discovery/discovery_engine with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/discovery/discovery_engine with cognitive telemetry.
-
-Creator discovery engine for Omniva Engine v2.
-"""
 
 from typing import Dict, List
 

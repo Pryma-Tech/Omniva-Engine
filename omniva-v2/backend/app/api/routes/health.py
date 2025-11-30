@@ -1,5 +1,5 @@
 """Infrastructure health endpoints."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/api/routes/health.
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/api/routes/health with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/api/routes/health with cognitive telemetry.
 
@@ -11,7 +11,7 @@ from app.core.health import check_jobs, check_storage, check_uploader
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("/", summary="Basic system health summary")
 async def health_summary() -> dict:
     return {
         "storage": check_storage(),

@@ -1,10 +1,11 @@
+"""Basic health checks for Omniva Engine.
+
+This module provides lightweight, side-effect-free helpers that are used by
+the `/health` HTTP endpoint and internal status probes.
 """
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/core/health.
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/core/health with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/core/health with cognitive telemetry.
-
-Basic health checks for Omniva Engine.
-"""
 
 import os
 

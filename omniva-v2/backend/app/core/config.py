@@ -1,5 +1,9 @@
-"""Configuration loader for Omniva Engine v2 (placeholder)."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/core/config.
+"""Configuration loader for Omniva Engine v2.
+
+This v0.1 implementation reads from environment variables and exposes a
+frozen dataclass instance used throughout the backend.
+"""
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/core/config with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/core/config with cognitive telemetry.
 

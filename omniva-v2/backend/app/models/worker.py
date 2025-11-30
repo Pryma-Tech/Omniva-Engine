@@ -1,5 +1,5 @@
-"""Worker heartbeat models (placeholder)."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/models/worker.
+"""Worker heartbeat models."""
+
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/models/worker with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/models/worker with cognitive telemetry.
 
