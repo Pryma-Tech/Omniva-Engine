@@ -1,5 +1,5 @@
 """Alignment and safety checks for agent actions."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/safety/safety_engine.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/safety/safety_engine.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/safety/safety_engine with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/safety/safety_engine with cognitive telemetry.
 

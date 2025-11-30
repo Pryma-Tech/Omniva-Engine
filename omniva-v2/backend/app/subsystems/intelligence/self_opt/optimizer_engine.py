@@ -1,5 +1,5 @@
 """Meta-optimizer that tunes prioritizer weights via ghost simulations."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/intelligence/self_opt/optimizer_engine.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/intelligence/self_opt/optimizer_engine.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/intelligence/self_opt/optimizer_engine with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/intelligence/self_opt/optimizer_engine with cognitive telemetry.
 
