@@ -22,6 +22,11 @@ uvicorn backend.app.main:app --reload
 pytest tests/test_api_orchestrator.py tests/test_cron_tasks.py tests/test_heartbeat_engine.py
 ```
 
+### Project storage
+- Backend v0.1 persists project metadata under `backend/storage/projects_meta/`.
+- A default project with ID `1` is created automatically on first startup so API and heartbeat flows have deterministic data.
+- To reset, stop the container/service and clear the JSON files in that directory.
+
 ### Docker workflows
 Use the `omniva` helper to build + redeploy both backend and frontend containers with coordinated settings:
 ```

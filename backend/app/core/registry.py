@@ -9,6 +9,7 @@ from app.core.config import AppConfig, load_config_from_env
 from app.heartbeat.cron_tasks import CronTasks
 from app.heartbeat.heartbeat_engine import HeartbeatEngine
 from app.subsystems.orchestrator.health_checks import HealthChecks
+from app.subsystems.projects import ProjectManager
 from app.subsystems.orchestrator.orchestrator_engine import MasterOrchestrator
 
 
@@ -22,6 +23,7 @@ class SubsystemRegistry:
         self.orchestrator: MasterOrchestrator | None = None
         self.health: HealthChecks | None = None
         self.config: AppConfig | None = None
+        self.projects: ProjectManager | None = None
 
     def register(self, name: str, subsystem: Any) -> Any:
         """Store a subsystem instance under a canonical name."""
@@ -152,9 +154,11 @@ def _build_registry(
     registry.config = config or load_config_from_env()
     log_factory = logger_factory or (lambda name: logging.getLogger(name))
 
-    projects = registry.register("project_manager", ProjectManagerStub())
+    # Real project manager backed by JSON store.
+    projects = registry.register("project_manager", ProjectManager())
     # Keep backward-compatible alias for legacy lookups.
     registry.register("projects", projects)
+    registry.projects = projects
 
     intelligence = registry.register("intelligence", IntelligenceStub(projects.get_all_project_ids()))
     autonomy = AutonomyStub()

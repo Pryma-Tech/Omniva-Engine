@@ -1,5 +1,5 @@
 """
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/intelligence/predictors/posting_time.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/intelligence/predictors/posting_time.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/intelligence/predictors/posting_time with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/intelligence/predictors/posting_time with cognitive telemetry.
 
