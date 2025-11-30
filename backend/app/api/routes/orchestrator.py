@@ -6,8 +6,8 @@ import asyncio
 import json
 from typing import List, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Response
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
 from app.api.deps import parse_project_scope, require_control_token
@@ -53,11 +53,11 @@ async def orchestrator_cycle(
     stream: bool = Query(False, description="Stream multiple cycle snapshots"),
     iterations: int = Query(1, ge=1, le=20),
     delay: float = Query(0.0, ge=0.0, le=5.0),
-) -> StreamingResponse | dict:
+) -> Response:
     """Run a global cycle once or stream repeated snapshots."""
     orchestrator = _orchestrator()
     if not stream:
-        return orchestrator.global_cycle()
+        return JSONResponse(orchestrator.global_cycle())
 
     async def _stream():
         for _ in range(iterations):
@@ -85,7 +85,10 @@ async def orchestrator_health(include_workers: bool = Query(True)) -> dict:
                 pid: len(intel.cognition.recent_memory(pid)) for pid in health_report.get("projects", {})
             }
             workers["queue_depths"] = queue_depths
-    response = {"health": health_report}
+    response = {
+        "projects": health_report.get("projects", {}),
+        "health": health_report,
+    }
     if workers:
         response["workers"] = workers
     return response

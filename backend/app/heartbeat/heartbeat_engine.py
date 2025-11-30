@@ -47,8 +47,16 @@ class HeartbeatEngine:
         self.running = False
         drained: List[str] = []
         if self._loop_task:
+            loop = None
             try:
-                await asyncio.wait_for(self._loop_task, timeout=getattr(self.config, "shutdown_timeout", 5.0))
+                loop = self._loop_task.get_loop()
+            except Exception:
+                pass
+            try:
+                if loop and loop is not asyncio.get_running_loop():
+                    self._loop_task.cancel()
+                else:
+                    await asyncio.wait_for(self._loop_task, timeout=getattr(self.config, "shutdown_timeout", 5.0))
             except asyncio.TimeoutError:
                 self.logger.warning("heartbeat.stop_timeout")
                 self._loop_task.cancel()
