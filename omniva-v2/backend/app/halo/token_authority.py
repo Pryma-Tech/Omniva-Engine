@@ -1,5 +1,5 @@
 """Scoped token issuance and validation."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/halo/token_authority.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/halo/token_authority.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/halo/token_authority with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/halo/token_authority with cognitive telemetry.
 

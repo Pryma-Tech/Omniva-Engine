@@ -1,5 +1,5 @@
 """Agent roles participating in the Constellation collaboration layer."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/constellation/agent_roles.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/constellation/agent_roles.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/constellation/agent_roles with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/constellation/agent_roles with cognitive telemetry.
 

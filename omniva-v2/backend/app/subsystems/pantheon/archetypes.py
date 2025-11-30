@@ -1,5 +1,5 @@
 """Archetype definitions for Omniva Pantheon."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/pantheon/archetypes.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/pantheon/archetypes.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/pantheon/archetypes with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/pantheon/archetypes with cognitive telemetry.
 

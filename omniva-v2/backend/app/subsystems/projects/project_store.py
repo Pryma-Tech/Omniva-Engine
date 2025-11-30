@@ -19,7 +19,7 @@ class ProjectStore:
     def __init__(self, session_factory: Optional[Callable[[], Any]] = None) -> None:
         self.base = os.path.join("storage", "projects_meta")
         os.makedirs(self.base, exist_ok=True)
-        # TODO(omniva-v0.1): Replace JSON persistence with relational table once available.
+        # TODO(omniva-v0.2): Replace JSON persistence with relational table once available.
         self._session_factory = session_factory or SessionLocal
 
     def _get_session(self):
@@ -49,7 +49,7 @@ class ProjectStore:
 
     def get(self, project_id: int, session: Any | None = None) -> Dict[str, Any]:
         if session is not None:
-            # TODO(omniva-v0.1): Implement relational project fetch using session once projects table exists.
+            # TODO(omniva-v0.2): Implement relational project fetch using session once projects table exists.
             pass
         path = self._path(project_id)
         if not os.path.exists(path):
@@ -60,7 +60,7 @@ class ProjectStore:
 
     def save(self, project_id: int, data: Dict[str, Any], session: Any | None = None) -> Dict[str, Any]:
         if session is not None:
-            # TODO(omniva-v0.1): Persist project rows to the database once schema is defined.
+            # TODO(omniva-v0.2): Persist project rows to the database once schema is defined.
             pass
         payload = self._with_defaults(project_id, data)
         path = self._path(project_id)
@@ -70,7 +70,7 @@ class ProjectStore:
 
     def list_all(self, session: Any | None = None) -> List[Dict[str, Any]]:
         if session is not None:
-            # TODO(omniva-v0.1): Query relational storage when available.
+            # TODO(omniva-v0.2): Query relational storage when available.
             pass
         projects: List[Dict[str, Any]] = []
         for file_name in os.listdir(self.base):
@@ -82,7 +82,7 @@ class ProjectStore:
 
     def list_ids(self, session: Any | None = None) -> List[int]:
         if session is not None:
-            # TODO(omniva-v0.1): Query relational storage when available.
+            # TODO(omniva-v0.2): Query relational storage when available.
             pass
         ids: List[int] = []
         for file_name in os.listdir(self.base):

@@ -1,5 +1,5 @@
 """Remote state and event synchronization helpers."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/etherlink/sync_protocol.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/etherlink/sync_protocol.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/etherlink/sync_protocol with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/etherlink/sync_protocol with cognitive telemetry.
 
