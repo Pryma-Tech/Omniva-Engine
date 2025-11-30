@@ -1,5 +1,5 @@
 """Infinity elastic autoscaling API routes."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/api/routes/infinity.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/api/routes/infinity.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/api/routes/infinity with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/api/routes/infinity with cognitive telemetry.
 

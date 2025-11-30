@@ -1,5 +1,5 @@
-"""Job queue routes (placeholder)."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/api/routes/jobs.
+"""Job queue routes."""
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/api/routes/jobs.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/api/routes/jobs with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/api/routes/jobs with cognitive telemetry.
 
