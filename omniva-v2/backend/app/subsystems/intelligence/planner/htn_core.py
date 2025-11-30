@@ -1,5 +1,5 @@
 """Core data structures for a simple Hierarchical Task Network (HTN) planner."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/intelligence/planner/htn_core.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/intelligence/planner/htn_core.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/intelligence/planner/htn_core with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/intelligence/planner/htn_core with cognitive telemetry.
 

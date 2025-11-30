@@ -1,5 +1,5 @@
 """Identity rule set that keeps the global agent persona coherent."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/selfmodel/identity_rules.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/selfmodel/identity_rules.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/selfmodel/identity_rules with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/selfmodel/identity_rules with cognitive telemetry.
 

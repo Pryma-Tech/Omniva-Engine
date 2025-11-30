@@ -1,5 +1,5 @@
 """Task and method library definitions for HTN planning."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/intelligence/planner/task_library.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/intelligence/planner/task_library.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/intelligence/planner/task_library with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/intelligence/planner/task_library with cognitive telemetry.
 

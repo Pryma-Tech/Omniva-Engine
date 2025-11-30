@@ -1,5 +1,5 @@
 """Metadata packet primitives for Omniva Stardust."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/stardust/packet.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/stardust/packet.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/stardust/packet with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/stardust/packet with cognitive telemetry.
 

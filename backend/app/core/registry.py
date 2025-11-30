@@ -8,8 +8,11 @@ from typing import Any, Callable, Dict, Iterable, List
 from app.core.config import AppConfig, load_config_from_env
 from app.heartbeat.cron_tasks import CronTasks
 from app.heartbeat.heartbeat_engine import HeartbeatEngine
+from app.subsystems.autonomy import AutonomyAdapter
+from app.subsystems.horizon import HorizonStore
 from app.subsystems.orchestrator.health_checks import HealthChecks
 from app.subsystems.projects import ProjectManager
+from app.subsystems.scheduler import SchedulerSubsystem
 from app.subsystems.orchestrator.orchestrator_engine import MasterOrchestrator
 
 
@@ -18,7 +21,7 @@ class SubsystemRegistry:
 
     def __init__(self) -> None:
         self._subsystems: Dict[str, Any] = {}
-        self.autonomy: AutonomyStub | None = None
+        self.autonomy: Any | None = None
         self.heartbeat: HeartbeatEngine | None = None
         self.orchestrator: MasterOrchestrator | None = None
         self.health: HealthChecks | None = None
@@ -161,8 +164,17 @@ def _build_registry(
     registry.projects = projects
 
     intelligence = registry.register("intelligence", IntelligenceStub(projects.get_all_project_ids()))
-    autonomy = AutonomyStub()
+
+    # Autonomy adapter for per-project loops.
+    autonomy = AutonomyAdapter(registry)
     registry.autonomy = autonomy
+    registry.register("autonomy", autonomy)
+
+    # Minimal scheduler + horizon stubs.
+    scheduler = SchedulerSubsystem()
+    registry.register("scheduler", scheduler)
+    horizon = HorizonStore()
+    registry.register("horizon", horizon)
 
     federation = registry.register("federation", FederationStub())
     meta = registry.register("meta", MetaLearningStub())
@@ -185,7 +197,6 @@ def _build_registry(
     registry.orchestrator = orchestrator
     registry.register("orchestrator", orchestrator)
 
-    registry.register("autonomy", autonomy)
     registry.register("heartbeat", heartbeat)
 
     # Ensure meta + governance subsystems are retained for lookups.

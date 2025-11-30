@@ -1,5 +1,5 @@
 """Collective emotional field synthesis for Omniva Chorus."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/chorus/resonance.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/chorus/resonance.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/chorus/resonance with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/chorus/resonance with cognitive telemetry.
 

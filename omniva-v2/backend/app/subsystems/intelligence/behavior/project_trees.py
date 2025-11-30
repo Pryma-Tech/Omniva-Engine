@@ -1,5 +1,5 @@
 """Project-specific behavior trees for the intelligence subsystem."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/intelligence/behavior/project_trees.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/intelligence/behavior/project_trees.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/intelligence/behavior/project_trees with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/intelligence/behavior/project_trees with cognitive telemetry.
 

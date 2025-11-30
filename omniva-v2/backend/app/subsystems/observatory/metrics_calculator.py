@@ -1,5 +1,5 @@
 """Helper utilities for computing observatory metrics."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/observatory/metrics_calculator.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/observatory/metrics_calculator.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/observatory/metrics_calculator with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/observatory/metrics_calculator with cognitive telemetry.
 

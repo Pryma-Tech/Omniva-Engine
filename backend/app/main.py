@@ -19,3 +19,14 @@ async def health_probe() -> dict:
         "projects": projects.get_all_project_ids() if projects else [],
     }
 
+
+@app.get("/metrics", tags=["system"])
+async def metrics_snapshot() -> dict:
+    """Return a small JSON snapshot of orchestrator/heartbeat health."""
+    projects = registry.get_subsystem("project_manager")
+    health = registry.health.system_health() if registry.health else {}
+    return {
+        "projects": projects.get_all_project_ids() if projects else [],
+        "heartbeat_running": registry.heartbeat.running if registry.heartbeat else False,
+        "health": health,
+    }

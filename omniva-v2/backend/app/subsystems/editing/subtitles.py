@@ -1,5 +1,5 @@
 """Minimal text overlay via ffmpeg subtitles filter."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/editing/subtitles.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/editing/subtitles.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/editing/subtitles with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/editing/subtitles with cognitive telemetry.
 

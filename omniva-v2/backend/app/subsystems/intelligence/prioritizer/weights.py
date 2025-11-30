@@ -1,5 +1,5 @@
 """Default weights for clip prioritization."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/intelligence/prioritizer/weights.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/intelligence/prioritizer/weights.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/intelligence/prioritizer/weights with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/intelligence/prioritizer/weights with cognitive telemetry.
 

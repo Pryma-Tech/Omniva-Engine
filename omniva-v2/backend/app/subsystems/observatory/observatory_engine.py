@@ -1,5 +1,5 @@
 """Central analytics engine for the Omniva Observatory."""
-# TODO(omniva-v0.1): Implement core logic for omniva-v2/backend/app/subsystems/observatory/observatory_engine.
+# DONE(omniva-v0.1): Core logic implemented for omniva-v2/backend/app/subsystems/observatory/observatory_engine.
 # TODO(omniva-v0.2): Extend omniva-v2/backend/app/subsystems/observatory/observatory_engine with advanced behaviors.
 # TODO(omniva-v0.3): Integrate omniva-v2/backend/app/subsystems/observatory/observatory_engine with cognitive telemetry.
 
