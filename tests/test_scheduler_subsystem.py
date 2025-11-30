@@ -1,4 +1,4 @@
-from backend.app.subsystems.scheduler import ScheduleStore, SchedulerSubsystem
+from app.subsystems.scheduler import ScheduleStore, SchedulerSubsystem
 
 
 def test_schedule_store_roundtrip(tmp_path):
@@ -28,4 +28,3 @@ def test_scheduler_subsystem_configure_and_get(tmp_path):
 
     got = scheduler.get_project_schedule(proj_id)
     assert got == cfg
-

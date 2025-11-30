@@ -35,7 +35,7 @@ async def heartbeat_start() -> dict:
 async def heartbeat_stop() -> dict:
     """Stop the global heartbeat loop."""
     heartbeat = _get_heartbeat()
-    result = heartbeat.stop()
+    result = await heartbeat.stop()
     logger.info("heartbeat.api_stop", extra={"result": result})
     return result
 
@@ -44,6 +44,6 @@ async def heartbeat_stop() -> dict:
 async def heartbeat_status() -> dict:
     """Report whether the heartbeat loop is running."""
     heartbeat = _get_heartbeat()
-    status = {"running": heartbeat.running}
+    status = {"running": heartbeat.running, "schedule": heartbeat.schedule_snapshot()}
     logger.info("heartbeat.api_status", extra=status)
     return status

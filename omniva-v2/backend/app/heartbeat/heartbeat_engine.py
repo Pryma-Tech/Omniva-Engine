@@ -1,22 +1,47 @@
-"""Global async scheduler for Omniva."""
+"""Global async scheduler for Omniva (v2 heartbeat engine).
+
+This is a lightly adapted copy of the legacy heartbeat engine with a
+compatible API plus a relaxed constructor that can operate without an
+explicit config object. When ``config`` is omitted, sensible defaults
+are used so callers like the v2 registry can simply do::
+
+    HeartbeatEngine(registry, cron_tasks)
+"""
 
 from __future__ import annotations
 
 import asyncio
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Awaitable, Callable, Dict, List
+from typing import Awaitable, Callable, Dict, List, Optional
 
-from app.core.config import HeartbeatConfig
+
+@dataclass
+class HeartbeatConfig:
+    """Lightweight configuration for the heartbeat loop."""
+
+    orchestrator_interval: float = 600.0
+    keepalive_interval: float = 120.0
+    midnight_check_interval: float = 300.0
+    loop_sleep_seconds: float = 1.0
+    enable_logging: bool = True
+    shutdown_timeout: float = 5.0
 
 
 class HeartbeatEngine:
     """Manage CRON-like schedules and keepalive signals."""
 
-    def __init__(self, registry, tasks, config: HeartbeatConfig, logger: logging.Logger | None = None) -> None:
+    def __init__(
+        self,
+        registry,
+        tasks,
+        config: Optional[HeartbeatConfig] = None,
+        logger: logging.Logger | None = None,
+    ) -> None:
         self.registry = registry
         self.tasks = tasks
-        self.config = config
+        self.config = config or HeartbeatConfig()
         self.logger = logger or logging.getLogger(__name__)
         self.running = False
         self.last_midnight = None
@@ -45,23 +70,21 @@ class HeartbeatEngine:
         if not self.running:
             return {"status": "not_running"}
         self.running = False
-        drained: List[str] = []
         if self._loop_task:
             try:
-                await asyncio.wait_for(self._loop_task, timeout=getattr(self.config, "shutdown_timeout", 5.0))
+                await asyncio.wait_for(self._loop_task, timeout=self.config.shutdown_timeout)
             except asyncio.TimeoutError:
                 self.logger.warning("heartbeat.stop_timeout")
                 self._loop_task.cancel()
             finally:
                 self._loop_task = None
-        # Run a final iteration to flush any pending cron tasks.
         drained = await self._process_iteration(datetime.utcnow())
         payload = {"status": "heartbeat_stopped", "drained_actions": drained}
         self.logger.info("heartbeat.stop", extra=payload)
         return payload
 
     def tick(self, now: datetime) -> List[str]:
-        """Run a single scheduler iteration (mostly for deterministic tests)."""
+        """Run a single scheduler iteration (primarily for tests)."""
         self._ensure_initialized(now)
         return asyncio.run(self._process_iteration(now))
 
@@ -99,7 +122,7 @@ class HeartbeatEngine:
             result = await action()
             if self.config.enable_logging:
                 self.logger.info("heartbeat.%s", label, extra={"action": label, "result": result})
-        except Exception:
+        except Exception:  # pragma: no cover - defensive logging
             self.logger.exception("heartbeat.%s failed", label)
 
     def _initialize_clocks(self, now: datetime) -> None:
@@ -116,45 +139,29 @@ class HeartbeatEngine:
         if self._last_midnight_check is None:
             self._last_midnight_check = now
             return True
-        if (now - self._last_midnight_check).total_seconds() >= self.config.midnight_check_interval:
+        if (now - self._last_midnight_check) >= timedelta(seconds=self.config.midnight_check_interval):
             self._last_midnight_check = now
             return True
         return False
 
     @staticmethod
-    def _elapsed(now: datetime, previous: datetime | None, interval_seconds: float) -> bool:
-        if previous is None:
+    def _elapsed(now: datetime, last: Optional[datetime], interval: float) -> bool:
+        if last is None:
             return True
-        return (now - previous).total_seconds() >= interval_seconds
+        return (now - last) >= timedelta(seconds=interval)
 
     def _missing_prerequisites(self) -> List[str]:
-        missing = []
+        missing: List[str] = []
         for name in self._prerequisites:
-            if not self.registry.get_subsystem(name):
+            if self.registry.get_subsystem(name) is None and not hasattr(self.registry, name):
                 missing.append(name)
         return missing
 
-    def schedule_snapshot(self) -> Dict[str, Dict[str, str | None] | bool]:
-        """Expose last/next timestamps so the API can report scheduler state."""
+    def schedule_snapshot(self) -> Dict[str, object]:
         return {
+            "orchestrator_interval": self.config.orchestrator_interval,
+            "keepalive_interval": self.config.keepalive_interval,
+            "midnight_check_interval": self.config.midnight_check_interval,
             "running": self.running,
-            "last": {
-                "midnight_reset": self._dt_to_str(self._last_midnight_check),
-                "orchestration_cycle": self._dt_to_str(self._last_orchestration),
-                "agent_keepalive": self._dt_to_str(self._last_keepalive),
-            },
-            "next": {
-                "orchestration_cycle": self._next_run(self._last_orchestration, self.config.orchestrator_interval),
-                "agent_keepalive": self._next_run(self._last_keepalive, self.config.keepalive_interval),
-            },
         }
 
-    @staticmethod
-    def _dt_to_str(value: datetime | None) -> str | None:
-        return value.isoformat() if value else None
-
-    @staticmethod
-    def _next_run(last: datetime | None, interval_seconds: float) -> str | None:
-        if last is None:
-            return None
-        return (last + timedelta(seconds=interval_seconds)).isoformat()

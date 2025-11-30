@@ -6,10 +6,11 @@ from backend.app.main import app
 from app.core.registry import registry
 
 client = TestClient(app)
+CONTROL_HEADERS = {"X-Omniva-Control-Token": "test-control"}
 
 
 def test_heartbeat_start_stop_cycle():
-    start_resp = client.post("/heartbeat/start")
+    start_resp = client.post("/heartbeat/start", headers=CONTROL_HEADERS)
     assert start_resp.status_code == 200
     assert start_resp.json()["status"] in {"heartbeat_started", "already_running"}
 
@@ -17,13 +18,13 @@ def test_heartbeat_start_stop_cycle():
     assert status_resp.status_code == 200
     assert "running" in status_resp.json()
 
-    stop_resp = client.post("/heartbeat/stop")
+    stop_resp = client.post("/heartbeat/stop", headers=CONTROL_HEADERS)
     assert stop_resp.status_code == 200
     assert stop_resp.json()["status"] == "heartbeat_stopped"
 
 
 def test_orchestrator_lifecycle_and_health():
-    start_resp = client.post("/orchestrator/start_all")
+    start_resp = client.post("/orchestrator/start_all", headers=CONTROL_HEADERS)
     assert start_resp.status_code == 200
     assert start_resp.json()["status"] == "all_projects_started"
 
@@ -37,7 +38,7 @@ def test_orchestrator_lifecycle_and_health():
     assert health_resp.status_code == 200
     assert "projects" in health_resp.json()
 
-    stop_resp = client.post("/orchestrator/stop_all")
+    stop_resp = client.post("/orchestrator/stop_all", headers=CONTROL_HEADERS, json={})
     assert stop_resp.status_code == 200
     assert stop_resp.json()["status"] == "all_projects_stopped"
 
@@ -48,4 +49,3 @@ def test_system_health_probe():
     body = resp.json()
     assert body["status"] == "ok"
     assert isinstance(body["projects"], list)
-

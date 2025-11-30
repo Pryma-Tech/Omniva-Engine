@@ -31,6 +31,7 @@ class HeartbeatConfig:
     midnight_check_interval: float = 300.0
     loop_sleep_seconds: float = 1.0
     enable_logging: bool = True
+    shutdown_timeout: float = 5.0
 
 
 @dataclass(frozen=True)
@@ -46,6 +47,6 @@ def load_config_from_env() -> AppConfig:
         midnight_check_interval=_float_env("OMNIVA_HEARTBEAT_MIDNIGHT_INTERVAL", 300.0),
         loop_sleep_seconds=_float_env("OMNIVA_HEARTBEAT_LOOP_SLEEP", 1.0),
         enable_logging=_bool_env("OMNIVA_HEARTBEAT_ENABLE_LOGGING", True),
+        shutdown_timeout=_float_env("OMNIVA_HEARTBEAT_SHUTDOWN_TIMEOUT", 5.0),
     )
     return AppConfig(heartbeat=hb)
-

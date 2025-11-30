@@ -1,4 +1,4 @@
-"""Global scheduled tasks triggered by the Heartbeat engine."""
+"""Global scheduled tasks triggered by the Heartbeat engine (v2)."""
 
 from __future__ import annotations
 
@@ -37,7 +37,6 @@ class CronTasks:
         self.logger.info("cron_task.%s", action, extra=extra)
 
     async def run_daily_midnight_reset(self) -> Dict[str, str]:
-        # TODO(omniva-v0.2): Emit Stardust events describing reset actions.
         intel = self.registry.get_subsystem("intelligence")
         projects = self._projects()
         horizon = self._horizon()
@@ -120,7 +119,6 @@ class CronTasks:
         return payload
 
     async def send_agent_keepalive(self) -> Dict[str, str]:
-        # TODO(omniva-v0.2): Push keepalives to external monitoring bus.
         intel = self.registry.get_subsystem("intelligence")
         projects = self._projects()
         health = getattr(self.registry, "health", None)
@@ -145,3 +143,4 @@ class CronTasks:
         }
         self._log("agent_keepalive", **result)
         return result
+

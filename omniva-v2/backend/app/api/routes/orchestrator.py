@@ -1,4 +1,4 @@
-"""Master orchestrator API routes."""
+"""Master orchestrator API routes (v2)."""
 
 from __future__ import annotations
 
@@ -89,3 +89,4 @@ async def orchestrator_health(include_workers: bool = Query(True)) -> dict:
     if workers:
         response["workers"] = workers
     return response
+

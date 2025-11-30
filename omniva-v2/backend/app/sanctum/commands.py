@@ -32,7 +32,7 @@ class SanctumCommands:
 
     # SYSTEM COMMANDS
     async def heartbeat_restart(self) -> Dict[str, str]:
-        self.registry.heartbeat.stop()
+        await self.registry.heartbeat.stop()
         self.registry.heartbeat.start()
         return {"message": "heartbeat restarted"}
 

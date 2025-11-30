@@ -1,4 +1,4 @@
-from backend.app.main import app
+from app.main import app
 from fastapi.testclient import TestClient
 
 
@@ -18,4 +18,3 @@ def test_healthz_and_metrics_basic_shape():
     assert "projects" in mbody
     assert "heartbeat_running" in mbody
     assert "health" in mbody
-

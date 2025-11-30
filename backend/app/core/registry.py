@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import Any, Callable, Dict, Iterable, List
 
 from app.core.config import AppConfig, load_config_from_env
+from app.core.event_bus import event_bus
 from app.heartbeat.cron_tasks import CronTasks
 from app.heartbeat.heartbeat_engine import HeartbeatEngine
 from app.subsystems.autonomy import AutonomyAdapter
@@ -22,6 +24,7 @@ class SubsystemRegistry:
     def __init__(self) -> None:
         self._subsystems: Dict[str, Any] = {}
         self.autonomy: Any | None = None
+        self.eventbus = None
         self.heartbeat: HeartbeatEngine | None = None
         self.orchestrator: MasterOrchestrator | None = None
         self.health: HealthChecks | None = None
@@ -41,22 +44,22 @@ class SubsystemRegistry:
 class ProjectManagerStub:
     """Minimal project registry powering orchestrator flows."""
 
-    def __init__(self, project_ids: Iterable[str] | None = None) -> None:
-        self._project_ids = list(project_ids or ("demo-project",))
+    def __init__(self, project_ids: Iterable[int] | None = None) -> None:
+        self._project_ids = [int(pid) for pid in (project_ids or (1,))]
 
-    def get_all_project_ids(self) -> List[str]:
+    def get_all_project_ids(self) -> List[int]:
         return list(self._project_ids)
 
 
 class DriftModelStub:
     """Simplified drift tracker used by CronTasks."""
 
-    def __init__(self, project_ids: Iterable[str]) -> None:
-        self.state: Dict[str, Dict[str, float]] = {
+    def __init__(self, project_ids: Iterable[int]) -> None:
+        self.state: Dict[int, Dict[str, float]] = {
             pid: {"drift_strength": 0.4} for pid in project_ids
         }
 
-    def get(self, pid: str) -> Dict[str, float]:
+    def get(self, pid: int) -> Dict[str, float]:
         return self.state.setdefault(pid, {"drift_strength": 0.2})
 
 
@@ -64,12 +67,41 @@ class CognitionStub:
     """Tracks working memory operations invoked by CronTasks."""
 
     def __init__(self, project_ids: Iterable[str]) -> None:
-        project_ids = list(project_ids)
+        project_ids = [int(pid) for pid in project_ids]
         self.drift = DriftModelStub(project_ids)
-        self.memory_log: Dict[str, List[Dict[str, Any]]] = {pid: [] for pid in project_ids}
+        self.memory_log: Dict[int, List[Dict[str, Any]]] = {pid: [] for pid in project_ids}
+        self.attention: Dict[int, float] = {pid: 1.0 for pid in project_ids}
 
-    def push_memory(self, pid: str, payload: Dict[str, Any]) -> None:
-        self.memory_log.setdefault(pid, []).append(payload)
+    def push_memory(self, pid: int, payload: Dict[str, Any]) -> None:
+        log = self.memory_log.setdefault(pid, [])
+        log.append(payload)
+        # Keep the log bounded so diagnostics stay small.
+        if len(log) > 200:
+            del log[:-200]
+
+    def recent_memory(self, pid: int, limit: int = 10) -> List[Dict[str, Any]]:
+        return list(self.memory_log.get(pid, [])[-limit:])
+
+    def update_attention(self, pid: int, value: float) -> None:
+        self.attention[pid] = max(0.0, min(1.0, value))
+
+
+class EmotionModelStub:
+    """Provides lightweight stress/confidence tracking."""
+
+    def __init__(self, project_ids: Iterable[str]) -> None:
+        self._state: Dict[int, Dict[str, float]] = {
+            int(pid): {"stress": 0.25, "confidence": 0.7} for pid in project_ids
+        }
+
+    def get(self, pid: int) -> Dict[str, float]:
+        return self._state.setdefault(int(pid), {"stress": 0.3, "confidence": 0.6})
+
+    def adjust(self, pid: int, *, stress_delta: float = 0.0, confidence_delta: float = 0.0) -> Dict[str, float]:
+        state = self.get(pid)
+        state["stress"] = max(0.0, min(1.0, state["stress"] + stress_delta))
+        state["confidence"] = max(0.0, min(1.0, state["confidence"] + confidence_delta))
+        return state
 
 
 class IntelligenceStub:
@@ -77,6 +109,7 @@ class IntelligenceStub:
 
     def __init__(self, project_ids: Iterable[str]) -> None:
         self.cognition = CognitionStub(project_ids)
+        self.emotion_model = EmotionModelStub(project_ids)
 
 
 class AutonomyStub:
@@ -147,6 +180,19 @@ class CrisisStub:
     def __init__(self) -> None:
         self.recent_events: List[Dict[str, Any]] = []
 
+    def record(self, project_id: int, description: str) -> None:
+        self.recent_events.append(
+            {
+                "project_id": int(project_id),
+                "description": description,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
+
+    def get_crises(self, project_id: int) -> List[Dict[str, Any]]:
+        target = int(project_id)
+        return [evt for evt in self.recent_events if evt.get("project_id") == target]
+
 
 def _build_registry(
     config: AppConfig | None = None,
@@ -164,6 +210,8 @@ def _build_registry(
     registry.projects = projects
 
     intelligence = registry.register("intelligence", IntelligenceStub(projects.get_all_project_ids()))
+    registry.register("event_bus", event_bus)
+    registry.eventbus = event_bus
 
     # Autonomy adapter for per-project loops.
     autonomy = AutonomyAdapter(registry)
@@ -201,6 +249,8 @@ def _build_registry(
 
     # Ensure meta + governance subsystems are retained for lookups.
     registry.register("intelligence_cognition", intelligence.cognition)
+
+    registry.eventbus = event_bus
 
     return registry
 
