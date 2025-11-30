@@ -2,6 +2,42 @@
 
 Omniva Engine v2 is a modular, plugin-based AI clipfarming platform featuring a FastAPI backend, Next.js frontend, and internal EventBus/Worker architecture for orchestrating clip discovery, editing, and publishing.
 
+## Minimal Backend (v0.1)
+This repo now includes a lightweight FastAPI service under `backend/` used to exercise the Heartbeat + Orchestrator flows described in the Omniva docs.
+
+### Setup
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+```
+
+### Run the service
+```
+uvicorn backend.app.main:app --reload
+```
+
+### Run backend tests
+```
+pytest tests/test_api_orchestrator.py tests/test_cron_tasks.py tests/test_heartbeat_engine.py
+```
+
+### Docker workflows
+Use the `omniva` helper to build + redeploy both backend and frontend containers with coordinated settings:
+```
+./omniva build redeploy
+```
+The script prompts for:
+- Backend/Frontend image tags and container names.
+- Backend host port (mapped to container port 8000).
+- Frontend host port (mapped to container port 3000; default 8080).
+
+It then:
+1. Builds images from `Dockerfile.backend` and `Dockerfile.frontend`.
+2. Recreates containers on the shared `omniva_network`.
+3. Injects `NEXT_PUBLIC_BACKEND_URL=http://omniva-backend:8000` so the frontend talks to the backend over the docker network.
+4. Prints verification steps (`curl http://localhost:<backend_port>/healthz`, visit the frontend host port) plus a reminder to follow PROMPT I for DNS/firewall exposure.
+
 ## Project Structure
 ```
 omniva-v2/

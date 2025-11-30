@@ -1,0 +1,119 @@
+---
+- name: Build and deploy Omniva Engine Docker container on GCP VM
+  hosts: omniva_vm
+  become: true
+  gather_facts: true
+  vars_prompt:
+    - name: "local_project_path"
+      prompt: "Path to your local Omniva Engine project directory"
+      private: no
+      default: "./"
+    - name: "container_name"
+      prompt: "Docker container name"
+      private: no
+      default: "omniva-engine"
+    - name: "host_port"
+      prompt: "Host port to expose for the dashboard"
+      private: no
+      default: "8080"
+    - name: "internal_port"
+      prompt: "Internal container port for the dashboard/app"
+      private: no
+      default: "8000"
+    - name: "dashboard_subdomain"
+      prompt: "Subdomain for the Omniva dashboard (e.g., dashboard.example.com)"
+      private: no
+      default: "dashboard.example.com"
+    - name: "extra_env_vars"
+      prompt: "Optional environment variables (KEY=VALUE lines, leave blank if none)"
+      private: no
+      default: ""
+  vars:
+    project_remote_path: /opt/omniva-engine
+    docker_image_name: omniva-engine:latest
+    docker_network_name: omniva_network
+  collections:
+    - community.docker
+  tasks:
+    - name: Ensure prerequisite apt packages are installed
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+        update_cache: true
+
+    - name: Install Docker engine packages
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose-plugin
+        state: present
+
+    - name: Ensure Docker service is running
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Create project directory on remote host
+      ansible.builtin.file:
+        path: "{{ project_remote_path }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy Omniva Engine project to remote host
+      ansible.builtin.copy:
+        src: "{{ local_project_path }}/"
+        dest: "{{ project_remote_path }}/"
+        owner: root
+        group: root
+        mode: "0755"
+      delegate_to: localhost
+
+    - name: Build Omniva Engine Docker image
+      community.docker.docker_image:
+        name: "{{ docker_image_name }}"
+        build:
+          path: "{{ project_remote_path }}"
+          pull: true
+        source: build
+
+    - name: Ensure Docker network exists
+      community.docker.docker_network:
+        name: "{{ docker_network_name }}"
+        state: present
+
+    - name: Parse extra env vars into dict
+      ansible.builtin.set_fact:
+        omniva_env_dict: "{{ dict(extra_env_vars.splitlines() | reject('equalto', '') | map('split', '=', 1) | list) if extra_env_vars | length > 0 else {} }}"
+
+    - name: Run Omniva Engine container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image_name }}"
+        restart_policy: unless-stopped
+        recreate: true
+        networks:
+          - name: "{{ docker_network_name }}"
+        published_ports:
+          - "{{ host_port }}:{{ internal_port }}"
+        env: "{{ omniva_env_dict }}"
+
+    - name: Query VM external IP via GCP metadata service
+      ansible.builtin.command: >
+        curl -H "Metadata-Flavor: Google"
+        http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip
+      register: gcp_ip
+      changed_when: false
+
+    - name: Display DNS instructions
+      ansible.builtin.debug:
+        msg:
+          - "Add this DNS record for your Omniva dashboard:"
+          - "A    {{ dashboard_subdomain }}    {{ gcp_ip.stdout }}"
+          - "Then access at: http://{{ dashboard_subdomain }}:{{ host_port }}"
+          - "Remember to create/verify firewall rules exposing TCP port {{ host_port }} only to trusted sources."

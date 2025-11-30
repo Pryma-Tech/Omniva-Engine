@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKEND_IMAGE_DEFAULT="omniva-backend:latest"
+FRONTEND_IMAGE_DEFAULT="omniva-frontend:latest"
+BACKEND_CONTAINER_DEFAULT="omniva-backend"
+FRONTEND_CONTAINER_DEFAULT="omniva-frontend"
+BACKEND_HOST_PORT_DEFAULT="8000"
+FRONTEND_HOST_PORT_DEFAULT="8080"
+FRONTEND_CONTAINER_PORT="3000"
+NETWORK_NAME="omniva_network"
+
+usage() {
+  cat <<EOF
+Omniva orchestration script.
+
+Usage:
+  ./omniva build redeploy    Build images and redeploy backend + frontend containers.
+  ./omniva help              Show this help.
+EOF
+}
+
+require_docker() {
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "ERROR: Docker is not installed or not on PATH."
+    exit 1
+  fi
+
+  DOCKER_CMD="docker"
+  if ! docker info >/dev/null 2>&1; then
+    if command -v doas >/dev/null 2>&1; then
+      DOCKER_CMD="doas docker"
+      if ! $DOCKER_CMD info >/dev/null 2>&1; then
+        echo "ERROR: Unable to access docker even via doas."
+        exit 1
+      fi
+    else
+      echo "ERROR: Docker requires elevated privileges. Run this script with sudo/doas or join the docker group."
+      exit 1
+    fi
+  fi
+  export DOCKER_CMD
+}
+
+prompt_stack_settings() {
+  read -rp "Backend image tag [${BACKEND_IMAGE_DEFAULT}]: " BACKEND_IMAGE
+  BACKEND_IMAGE=${BACKEND_IMAGE:-$BACKEND_IMAGE_DEFAULT}
+
+  read -rp "Frontend image tag [${FRONTEND_IMAGE_DEFAULT}]: " FRONTEND_IMAGE
+  FRONTEND_IMAGE=${FRONTEND_IMAGE:-$FRONTEND_IMAGE_DEFAULT}
+
+  read -rp "Backend container name [${BACKEND_CONTAINER_DEFAULT}]: " BACKEND_CONTAINER
+  BACKEND_CONTAINER=${BACKEND_CONTAINER:-$BACKEND_CONTAINER_DEFAULT}
+
+  read -rp "Frontend container name [${FRONTEND_CONTAINER_DEFAULT}]: " FRONTEND_CONTAINER
+  FRONTEND_CONTAINER=${FRONTEND_CONTAINER:-$FRONTEND_CONTAINER_DEFAULT}
+
+  read -rp "Backend host port [${BACKEND_HOST_PORT_DEFAULT}]: " BACKEND_HOST_PORT
+  BACKEND_HOST_PORT=${BACKEND_HOST_PORT:-$BACKEND_HOST_PORT_DEFAULT}
+
+  read -rp "Frontend host port [${FRONTEND_HOST_PORT_DEFAULT}]: " FRONTEND_HOST_PORT
+  FRONTEND_HOST_PORT=${FRONTEND_HOST_PORT:-$FRONTEND_HOST_PORT_DEFAULT}
+}
+
+build_images() {
+  echo "Building backend image '${BACKEND_IMAGE}' ..."
+  $DOCKER_CMD build -t "${BACKEND_IMAGE}" -f "${ROOT_DIR}/Dockerfile.backend" "${ROOT_DIR}"
+
+  echo "Building frontend image '${FRONTEND_IMAGE}' ..."
+  $DOCKER_CMD build -t "${FRONTEND_IMAGE}" -f "${ROOT_DIR}/Dockerfile.frontend" "${ROOT_DIR}"
+}
+
+redeploy_containers() {
+  for name in "${BACKEND_CONTAINER}" "${FRONTEND_CONTAINER}"; do
+    if $DOCKER_CMD ps -a --format '{{.Names}}' | grep -qx "${name}"; then
+      echo "Container ${name} exists; removing it."
+      $DOCKER_CMD rm -f "${name}" >/dev/null
+    fi
+  done
+  if ! $DOCKER_CMD network ls --format '{{.Name}}' | grep -qx "${NETWORK_NAME}"; then
+    echo "Creating docker network '${NETWORK_NAME}' ..."
+    $DOCKER_CMD network create "${NETWORK_NAME}" >/dev/null
+  fi
+
+  echo "Starting backend container '${BACKEND_CONTAINER}' ..."
+  $DOCKER_CMD run -d \
+    --name "${BACKEND_CONTAINER}" \
+    --restart unless-stopped \
+    --network "${NETWORK_NAME}" \
+    -p "${BACKEND_HOST_PORT}:8000" \
+    "${BACKEND_IMAGE}" >/dev/null
+
+  echo "Starting frontend container '${FRONTEND_CONTAINER}' ..."
+  $DOCKER_CMD run -d \
+    --name "${FRONTEND_CONTAINER}" \
+    --restart unless-stopped \
+    --network "${NETWORK_NAME}" \
+    -p "${FRONTEND_HOST_PORT}:${FRONTEND_CONTAINER_PORT}" \
+    -e "NEXT_PUBLIC_BACKEND_URL=http://${BACKEND_CONTAINER}:8000" \
+    -e "PORT=${FRONTEND_CONTAINER_PORT}" \
+    "${FRONTEND_IMAGE}" >/dev/null
+
+  cat <<EOF
+
+Stack deployed:
+- Backend:  http://localhost:${BACKEND_HOST_PORT}
+- Frontend: http://localhost:${FRONTEND_HOST_PORT}
+
+NEXT STEPS:
+1. curl http://localhost:${BACKEND_HOST_PORT}/healthz
+2. Visit the frontend host port in your browser.
+3. Configure DNS + firewall (PROMPT I) to expose the frontend port externally.
+EOF
+}
+
+if [[ $# -lt 1 ]]; then
+  usage
+  exit 1
+fi
+
+command="$1"
+shift || true
+
+case "$command" in
+  help|--help|-h)
+    usage
+    ;;
+  build)
+    if [[ "${1:-}" != "redeploy" ]]; then
+      echo "ERROR: Expected 'build redeploy'."
+      usage
+      exit 1
+    fi
+    require_docker
+    prompt_stack_settings
+    build_images
+    redeploy_containers
+    ;;
+  *)
+    echo "ERROR: Unknown command '$command'."
+    usage
+    exit 1
+    ;;
+esac

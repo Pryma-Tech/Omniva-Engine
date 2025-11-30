@@ -33,3 +33,10 @@ dist/
 build/
 .cache/
 coverage/
+
+# Legacy creation artifacts (archived in ../Omniva-Discards)
+omniva_file_heads.txt
+omniva_full_dump.txt
+omniva_ls_snapshot.txt
+omniva_tree_snapshot.txt
+install_python312.sh
